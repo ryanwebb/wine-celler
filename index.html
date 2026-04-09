@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v15</div>
+    <div class="header-sub">Ryan &amp; Pam · v16</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -487,7 +487,7 @@ function renderStats(){
   const avg=rated.length?(rated.reduce((s,w)=>s+parseFloat(overall(w)),0)/rated.length).toFixed(1):'—';
   document.getElementById('statsBar').innerHTML=`
     <div class="stat-card"><div class="stat-num">${wines.length}</div><div class="stat-label">Tasted</div></div>
-    <div class="stat-card"><div class="stat-num">${tb}</div><div class="stat-label">In Cellar</div></div>
+    <div class="stat-card"><div class="stat-num">${tb}</div><div class="stat-label">Wishlist</div></div>
     <div class="stat-card"><div class="stat-num">${avg}</div><div class="stat-label">Avg Rating</div></div>
     <div class="stat-card"><div class="stat-num">${wines.filter(w=>w.bc).length}</div><div class="stat-label">Baron's Creek</div></div>`;
 }
