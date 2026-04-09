@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v12</div>
+    <div class="header-sub">Ryan &amp; Pam · v13</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -378,7 +378,7 @@ function checkAPIKeySetup(){
     var r=document.getElementById('ghRepoInput');
     if(u&&getGHUser()) u.value=getGHUser();
     if(r&&getGHRepo()) r.value=getGHRepo();
-    document.getElementById('apiSetup').style.display='flex';
+    document.getElementById('apiSetup').style.cssText='display:flex;position:fixed;inset:0;background:#1a0f0f;z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;';
     return true;
   }
   return false;
@@ -805,7 +805,7 @@ if(!checkAPIKeySetup()){
 }
 </script>
 <!-- API Key Setup Overlay -->
-<div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+<div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
   <div style="max-width:400px;width:100%;text-align:center;">
     <div style="font-size:40px;margin-bottom:16px;">🍷</div>
     <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#faf7f2;margin-bottom:8px;">Webb Wine Cellar</div>
