@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Webb Wine Cellar</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -165,7 +168,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v10</div>
+    <div class="header-sub">Ryan &amp; Pam · v11</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -738,7 +741,7 @@ renderTasted();
       <div style="font-size:12px;color:#7a5c50;margin-bottom:14px;line-height:1.6;">Paste your API key below. It saves locally on this device and is never shared.</div>
       <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
       <div id="apiKeyError" style="display:none;color:#e08080;font-size:12px;margin-bottom:10px;"></div>
-      <button onclick="saveAPIKey()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
+      <button onclick="(function(){var k=document.getElementById('apiKeyInput').value.trim();var e=document.getElementById('apiKeyError');e.style.display='none';if(!k){e.style.display='block';e.textContent='Please paste your API key.';return;}localStorage.setItem('webb_api_key',k);document.getElementById('apiSetup').style.display='none';renderStats();renderTasted();})()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
     </div>
     <div style="font-size:11px;color:#7a5c50;margin-top:16px;line-height:1.6;">Get your key at <span style="color:#c9a84c;">console.anthropic.com</span><br>~$0.01 per 10 wine scans</div>
   </div>
