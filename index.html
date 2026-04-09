@@ -181,7 +181,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v8</div>
+    <div class="header-sub">Ryan &amp; Pam · v9</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -661,14 +661,54 @@ async function doPhotoScan(){
 async function doTextSearch(){
   var query=document.getElementById('searchInput').value.trim();
   if(!query)return;
-  showStatus('loading','Looking up wine...');
+  showStatus('loading','Searching for matches...');
   try{
-    var raw=await callClaude([{role:'user',content:'Wine: "'+query+'". Return the JSON object with all details you know about this wine.'}]);
-    var parsed=parseWineJSON(raw);
-    populateForm(parsed);
-    showStatus('success','Found: '+(parsed.name||query)+' - form filled below.');
+    var raw=await callClaude([{role:'user',content:'List wines matching: "'+query+'". Return ONLY a JSON array of up to 6 matching wine objects, each with keys: name, producer, vintage, type, region, typicalPrice. Types must be one of: chardonnay, red-blend, pinot-noir, cabernet, merlot, zinfandel, rose, other. No prose, no markdown, just the JSON array.'}]);
+    var cleaned=raw.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+    var arr;
+    try{ arr=JSON.parse(cleaned); }
+    catch(e){
+      var m=cleaned.match(/\[[\s\S]*\]/);
+      if(m) arr=JSON.parse(m[0]);
+      else throw new Error('Could not parse wine list');
+    }
+    if(!Array.isArray(arr)||!arr.length) throw new Error('No matches found');
+    showWinePickList(arr, query);
   }catch(err){
     console.error('Text search error:',err);
+    showStatus('error',err.message);
+  }
+}
+
+function showWinePickList(wines, query){
+  var el=document.getElementById('aiStatus');
+  el.style.display='block';
+  el.className='';
+  el.style.background='rgba(255,255,255,0.03)';
+  el.style.border='1px solid rgba(201,168,76,0.2)';
+  el.style.borderRadius='10px';
+  el.style.padding='12px';
+  el.style.marginTop='14px';
+  var html='<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#c9a84c;margin-bottom:10px;">Select a Wine</div>';
+  wines.forEach(function(w,i){
+    html+='<div onclick="selectWineFromList('+i+')" style="padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);margin-bottom:8px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(201,168,76,0.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">'
+      +'<div style="font-family:Cormorant Garamond,serif;font-size:17px;color:#faf7f2;">'+w.name+'</div>'
+      +'<div style="font-size:11px;color:#7a5c50;margin-top:2px;">'+(w.producer||'')+(w.region?' · '+w.region:'')+(w.typicalPrice?' · '+w.typicalPrice:'')+'</div>'
+      +'</div>';
+  });
+  el.innerHTML=html;
+  window._winePickList=wines;
+}
+
+async function selectWineFromList(idx){
+  var wine=window._winePickList[idx];
+  showStatus('loading','Loading details for '+wine.name+'...');
+  try{
+    var raw=await callClaude([{role:'user',content:'Give me full details for this exact wine: "'+wine.name+'" by "'+wine.producer+'". Return ONLY a JSON object with keys: name, producer, vintage, type, region, typicalPrice, proNotes, tags. No prose, no markdown.'}]);
+    var parsed=parseWineJSON(raw);
+    populateForm(parsed);
+    showStatus('success','Loaded: '+(parsed.name||wine.name)+' - review and add your ratings.');
+  }catch(err){
     showStatus('error',err.message);
   }
 }
