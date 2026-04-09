@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v19</div>
+    <div class="header-sub">Ryan &amp; Pam · v20</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -810,23 +810,42 @@ async function getRecommendation(type){
   statusEl.className='ai-status loading';
   statusEl.innerHTML='<div class="spinner"></div><span>Finding recommendations...</span>';
   resultsEl.innerHTML='';
+  // Scroll status into view so user sees it immediately
+  setTimeout(function(){ statusEl.scrollIntoView({behavior:'smooth',block:'center'}); }, 50);
 
   // Build taste profile from logged wines
   var topWines=wines.filter(function(w){return (w.ryanRating||0)>=4||(w.pamRating||0)>=4;}).map(function(w){return w.name+' ('+overall(w)+'/5)';});
   var allWines=wines.map(function(w){return w.name;});
   var wishlist=cellar.map(function(w){return w.name;});
 
-  var typeDesc=type==='red'?'red wine':type==='white'?'white wine':'wine of any color (surprise them)';
-  var profile='LIKES: Oaky Chardonnay more oak than butter, red blends, smooth dark-fruit wines. ';
-  profile+='DISLIKES: Sweet wines, Pinot Gris too weak and watery. ';
+  var profile='LIKES: Oaky Chardonnay (more oak than butter), red blends, smooth dark-fruit driven wines. ';
+  profile+='DISLIKES: Sweet wines, thin/watery wines like Pinot Gris. ';
   profile+='BUDGET: around $50 for special, prefers under $20 everyday. ';
   if(topWines.length) profile+='TOP RATED: '+topWines.join(', ')+'. ';
-  profile+='ALREADY TRIED exclude these: '+(allWines.length?allWines.join(', '):'none')+'. ';
-  profile+='WISHLIST also exclude: '+(wishlist.length?wishlist.join(', '):'none')+'.';
-  var prompt='You are a sommelier. Recommend 3 '+typeDesc+' bottles for this taste profile: '+profile
-    +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
-    +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
-    +' No prose, no markdown fences, just the raw JSON array.';
+  profile+='ALREADY TRIED — exclude these: '+(allWines.length?allWines.join(', '):'none')+'. ';
+  profile+='WISHLIST — also exclude: '+(wishlist.length?wishlist.join(', '):'none')+'.';
+
+  var prompt;
+  if(type==='red'){
+    prompt='You are a sommelier. Recommend 3 red wine bottles for this taste profile: '+profile
+      +' Stick to styles they already enjoy (red blends, Cabernet, Merlot, smooth dark-fruit reds).'
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
+      +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
+      +' No prose, no markdown fences, just the raw JSON array.';
+  } else if(type==='white'){
+    prompt='You are a sommelier. Recommend 3 white wine bottles for this taste profile: '+profile
+      +' Stick to styles they already enjoy (oaky Chardonnay, full-bodied whites, more oak than butter).'
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
+      +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
+      +' No prose, no markdown fences, just the raw JSON array.';
+  } else {
+    prompt='You are a sommelier. Recommend 3 ADVENTUROUS wines slightly outside this person\'s usual comfort zone, but chosen because you genuinely think they will love them based on their profile: '+profile
+      +' Their usual go-tos are oaky Chardonnay and red blends. Push them somewhere interesting — think grapes or regions they likely haven\'t explored: e.g. Tempranillo, Malbec, GSM/Grenache blends, Viognier, white Burgundy/Mâcon, Albariño with body, Nero d\'Avola, Carménère, or similar.'
+      +' Avoid anything sweet or thin. Each pick should be a genuine "I think you\'ll love this" stretch recommendation — different grape or region from their norm, but matching their flavor DNA (dry, some body/structure, dark or stone fruit, not flabby).'
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
+      +' reason should explain both WHY it\'s a stretch AND why they\'ll love it (1-2 sentences). searchUrl is a wine-searcher.com search URL.'
+      +' No prose, no markdown fences, just the raw JSON array.';
+  }
 
   try{
     var raw=await callClaude([{role:'user',content:prompt}]);
