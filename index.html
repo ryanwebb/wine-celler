@@ -181,7 +181,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v7</div>
+    <div class="header-sub">Ryan &amp; Pam · v8</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -355,6 +355,25 @@
 </div>
 
 <script>
+// ── API Key ────────────────────────────────────────────────────────────────
+function getAPIKey(){ return localStorage.getItem('webb_api_key')||''; }
+
+function saveAPIKey(){
+  var key=document.getElementById('apiKeyInput').value.trim();
+  var err=document.getElementById('apiKeyError');
+  err.style.display='none';
+  if(!key){ err.style.display='block'; err.textContent='Please paste your API key.'; return; }
+  localStorage.setItem('webb_api_key',key);
+  document.getElementById('apiSetup').style.display='none';
+  renderStats(); renderTasted();
+}
+
+function checkAPIKeySetup(){
+  if(!getAPIKey()){
+    document.getElementById('apiSetup').style.display='flex';
+  }
+}
+
 const TYPE_LABELS={chardonnay:'Chardonnay','red-blend':'Red Blend','pinot-noir':'Pinot Noir',cabernet:'Cabernet Sauvignon',merlot:'Merlot',zinfandel:'Zinfandel',rose:'Rosé',other:'Other','':''};
 const TYPE_KEYS=Object.keys(TYPE_LABELS);
 
