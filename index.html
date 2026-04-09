@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v13</div>
+    <div class="header-sub">Ryan &amp; Pam · v14</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -422,19 +422,26 @@ async function saveToGitHub(){
   if(!user||!repo||!getGHPat()) return;
   showSyncStatus('loading','Saving...');
   try{
-    var wContent=btoa(unescape(encodeURIComponent(JSON.stringify(wines,null,2))));
-    var wBody={message:'Update wines',content:wContent};
-    if(_ghSHAs.wines) wBody.sha=_ghSHAs.wines;
-    var wResp=await ghRequest('PUT','/repos/'+user+'/'+repo+'/contents/wines.json',wBody);
-    _ghSHAs.wines=wResp.content.sha;
-    var cContent=btoa(unescape(encodeURIComponent(JSON.stringify(cellar,null,2))));
-    var cBody={message:'Update cellar',content:cContent};
-    if(_ghSHAs.cellar) cBody.sha=_ghSHAs.cellar;
-    var cResp=await ghRequest('PUT','/repos/'+user+'/'+repo+'/contents/cellar.json',cBody);
-    _ghSHAs.cellar=cResp.content.sha;
+    await ghSaveFile(user,repo,'wines.json',wines);
+    await ghSaveFile(user,repo,'cellar.json',cellar);
     showSyncStatus('success','Saved ✓');
     setTimeout(function(){ document.getElementById('syncStatus').style.display='none'; },2500);
   }catch(e){ showSyncStatus('error','Save failed: '+e.message); }
+}
+
+async function ghSaveFile(user,repo,filename,data){
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
+  var body={message:'Update '+filename,content:content};
+  // Always fetch current SHA before writing to avoid 409 conflicts
+  if(!_ghSHAs[filename]){
+    try{
+      var existing=await ghRequest('GET','/repos/'+user+'/'+repo+'/contents/'+filename);
+      _ghSHAs[filename]=existing.sha;
+    }catch(e){ /* file doesn't exist yet, that's fine */ }
+  }
+  if(_ghSHAs[filename]) body.sha=_ghSHAs[filename];
+  var resp=await ghRequest('PUT','/repos/'+user+'/'+repo+'/contents/'+filename,body);
+  _ghSHAs[filename]=resp.content.sha;
 }
 
 function showSyncStatus(type,msg){
