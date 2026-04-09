@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webb Wine Cellar</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burgundy:#5c1a1a;--deep-red:#8b2635;--wine:#722f37;--gold:#c9a84c;
+    --gold-light:#e8c97a;--cream:#f5f0e8;--dark:#1a0f0f;--muted:#7a5c50;--white:#faf7f2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--cream);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(92,26,26,.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(114,47,55,.3) 0%,transparent 50%);pointer-events:none;z-index:0;}
+  .app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 16px 80px;}
+
+  header{text-align:center;padding:40px 0 24px;border-bottom:1px solid rgba(201,168,76,.3);margin-bottom:28px;}
+  .header-label{font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  header h1{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--white);letter-spacing:2px;}
+  header h1 span{color:var(--gold);font-style:italic;}
+  .header-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px;}
+
+  .tabs{display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:8px;padding:3px;margin-bottom:24px;}
+  .tab{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-radius:6px;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Montserrat',sans-serif;}
+  .tab.active{background:var(--wine);color:var(--gold-light);}
+
+  .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+  .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:14px 10px;text-align:center;}
+  .stat-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--gold);line-height:1;}
+  .stat-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+  .section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--gold-light);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:1px;background:rgba(201,168,76,.2);}
+
+  .wine-grid{display:flex;flex-direction:column;gap:12px;}
+  .wine-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+  .wine-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+  .wine-card.chardonnay::before{background:var(--gold);}
+  .wine-card.red-blend::before{background:var(--deep-red);}
+  .wine-card.pinot-noir::before{background:#9b4358;}
+  .wine-card.cabernet::before{background:#6b2040;}
+  .wine-card.merlot::before,.wine-card.zinfandel::before,.wine-card.rose::before,.wine-card.other::before{background:var(--muted);}
+  .wine-card:hover{border-color:rgba(201,168,76,.3);background:rgba(255,255,255,.07);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .wine-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--white);line-height:1.2;}
+  .wine-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+  .card-right{text-align:right;flex-shrink:0;}
+  .overall-rating{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);line-height:1;}
+  .overall-rating span{font-size:14px;color:var(--muted);}
+  .card-ratings{display:flex;gap:16px;margin-top:4px;justify-content:flex-end;}
+  .mini-rating{font-size:11px;color:var(--muted);}
+  .mini-rating strong{color:var(--cream);}
+  .card-notes{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;line-height:1.5;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;}
+  .badge{display:inline-block;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;margin-top:6px;margin-right:4px;}
+  .badge-bc{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+  .badge-price{background:rgba(50,180,80,.15);color:#7dd890;border:1px solid rgba(50,180,80,.3);}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .tag{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--muted);border:1px solid rgba(255,255,255,.08);}
+
+  .cellar-grid{display:flex;flex-direction:column;gap:10px;}
+  .cellar-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .cellar-info{flex:1;}
+  .cellar-name{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--white);}
+  .cellar-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .cellar-qty{display:flex;align-items:center;gap:10px;}
+  .qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid rgba(201,168,76,.3);background:transparent;color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .qty-btn:hover{background:rgba(201,168,76,.15);}
+  .qty-num{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--white);min-width:24px;text-align:center;}
+
+  .form-panel{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.15);border-radius:14px;padding:22px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:1/-1;}
+  label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);}
+  input,select,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--cream);font-family:'Montserrat',sans-serif;font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+  input:focus,select:focus,textarea:focus{border-color:rgba(201,168,76,.5);}
+  select option{background:var(--dark);}
+  textarea{resize:vertical;min-height:80px;line-height:1.5;}
+  .ratings-section{background:rgba(255,255,255,.03);border-radius:10px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+  .rating-block label{display:block;margin-bottom:8px;}
+  .stars{display:flex;gap:4px;}
+  .star{font-size:22px;cursor:pointer;color:rgba(255,255,255,.15);transition:color .15s;line-height:1;}
+  .star.filled{color:var(--gold);}
+  .star:hover{color:var(--gold-light);}
+
+  .btn{padding:12px 24px;border-radius:8px;border:none;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--wine);color:var(--gold-light);}
+  .btn-primary:hover{background:var(--deep-red);}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.1);}
+  .btn-secondary:hover{border-color:rgba(255,255,255,.25);color:var(--cream);}
+  .btn-gold{background:var(--gold);color:var(--dark);}
+  .btn-gold:hover{background:var(--gold-light);}
+  .btn-danger{background:rgba(180,40,40,.2);color:#e08080;border:1px solid rgba(180,40,40,.3);}
+  .btn-danger:hover{background:rgba(180,40,40,.35);}
+  .form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+
+  /* Scan zone */
+  .scan-zone{background:rgba(201,168,76,.05);border:1.5px dashed rgba(201,168,76,.3);border-radius:14px;padding:24px;margin-bottom:20px;}
+  .scan-zone-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold-light);margin-bottom:6px;text-align:center;}
+  .scan-zone-sub{font-size:11px;color:var(--muted);margin-bottom:18px;text-align:center;line-height:1.6;}
+  .scan-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+  .scan-btn{display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold-light);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+  .scan-btn:hover{background:rgba(201,168,76,.18);border-color:rgba(201,168,76,.5);}
+  .scan-btn svg{width:18px;height:18px;flex-shrink:0;}
+  .preview-img{max-width:160px;max-height:200px;border-radius:10px;border:1px solid rgba(201,168,76,.2);margin:0 auto 14px;display:block;object-fit:cover;}
+  .search-row{display:flex;gap:8px;}
+  .search-row input{flex:1;}
+  .search-row button{flex-shrink:0;padding:10px 16px;border-radius:8px;border:none;background:var(--wine);color:var(--gold-light);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+  .search-row button:hover{background:var(--deep-red);}
+
+  .ai-status{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:12px;margin-top:14px;}
+  .ai-status.loading{background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
+  .ai-status.success{background:rgba(50,180,80,.08);color:#7dd890;border:1px solid rgba(50,180,80,.2);}
+  .ai-status.error{background:rgba(180,60,60,.1);color:#e08080;border:1px solid rgba(180,60,60,.25);}
+  .spinner{width:16px;height:16px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Modals */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal{background:#1e0f0f;border:1px solid rgba(201,168,76,.2);border-radius:20px 20px 0 0;padding:28px 22px 40px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 20px;}
+  .modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--white);margin-bottom:4px;}
+  .modal-subtitle{font-size:11px;color:var(--muted);margin-bottom:20px;letter-spacing:1px;}
+  .modal-section{margin-bottom:18px;}
+  .modal-section-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,.15);}
+  .detail-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;}
+  .detail-label{color:var(--muted);}
+  .detail-val{color:var(--cream);font-weight:500;}
+  .big-rating{text-align:center;padding:16px;}
+  .big-rating .num{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:600;color:var(--gold);line-height:1;}
+  .big-rating .lbl{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .ratings-display{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+  .rdc{background:rgba(255,255,255,.04);border-radius:8px;padding:12px;text-align:center;}
+  .rdc .rname{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+  .rdc .rval{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--white);}
+  .notes-block{background:rgba(255,255,255,.04);border-radius:8px;padding:14px;font-size:13px;color:var(--muted);font-style:italic;line-height:1.6;}
+  .modal-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .filter-btn{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+  .filter-btn.active{background:var(--wine);color:var(--gold-light);border-color:transparent;}
+  .sort-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sort-row label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;flex-shrink:0;margin:0;}
+  .sort-row select{padding:6px 10px;font-size:11px;}
+  .empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
+  .empty-state .icon{font-size:40px;margin-bottom:12px;}
+  .empty-state p{font-size:13px;line-height:1.6;}
+
+  @media(max-width:480px){
+    .stats-bar{grid-template-columns:repeat(2,1fr);}
+    .form-grid{grid-template-columns:1fr;}
+    .form-group.full{grid-column:1;}
+    header h1{font-size:32px;}
+    .ratings-section{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- API Key Setup Overlay -->
+<div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <div style="max-width:400px;width:100%;text-align:center;">
+    <div style="font-size:40px;margin-bottom:16px;">🍷</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#faf7f2;margin-bottom:8px;">Webb Wine Cellar</div>
+    <div style="font-size:11px;color:#7a5c50;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">One-time setup</div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:24px;text-align:left;">
+      <div style="font-size:12px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Anthropic API Key</div>
+      <div style="font-size:12px;color:#7a5c50;margin-bottom:14px;line-height:1.6;">Paste your API key below. It saves locally on this device and is never shared.</div>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
+      <div id="apiKeyError" style="display:none;color:#e08080;font-size:12px;margin-bottom:10px;"></div>
+      <button onclick="saveAPIKey()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
+    </div>
+    <div style="font-size:11px;color:#7a5c50;margin-top:16px;line-height:1.6;">Get your key at <span style="color:#c9a84c;">console.anthropic.com</span><br>~$0.01 per 10 wine scans</div>
+  </div>
+</div>
+
+<div class="app">
+  <header>
+    <div class="header-label">Personal Collection</div>
+    <h1>Webb <span>Wine</span> Cellar</h1>
+    <div class="header-sub">Ryan &amp; Pam · v7</div>
+  <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tasted')">Tasted</button>
+    <button class="tab" onclick="switchTab('cellar')">Cellar</button>
+    <button class="tab" onclick="switchTab('log')">Log Wine</button>
+  </div>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- TASTED -->
+  <div id="tab-tasted">
+    <div class="filter-bar" id="filterBar"></div>
+    <div class="sort-row">
+      <label>Sort:</label>
+      <select onchange="renderTasted()" id="sortSelect">
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="rating-desc">Highest Rated</option>
+        <option value="rating-asc">Lowest Rated</option>
+      </select>
+    </div>
+    <div class="wine-grid" id="wineGrid"></div>
+  </div>
+
+  <!-- CELLAR -->
+  <div id="tab-cellar" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="section-title" style="margin:0;flex:1">On Hand</div>
+      <button class="btn btn-primary" onclick="openAddCellar()" style="font-size:10px;padding:9px 16px">+ Add</button>
+    </div>
+    <div class="cellar-grid" id="cellarGrid"></div>
+  </div>
+
+  <!-- LOG -->
+  <div id="tab-log" style="display:none">
+    <div class="scan-zone">
+      <div class="scan-zone-title">🔍 AI Label Scan</div>
+      <div class="scan-zone-sub">Photo a label or type a wine name — Claude will search for ratings, tasting notes &amp; more to auto-fill the form below.</div>
+      <div class="scan-btns">
+        <button class="scan-btn" onclick="document.getElementById('cameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="scan-btn" onclick="document.getElementById('fileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+      <img id="photoPreview" class="preview-img" style="display:none" alt="Label">
+      <div style="margin-bottom:8px;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Or search by name</div>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="e.g. 2022 Jordan Cabernet Sauvignon" onkeydown="if(event.key==='Enter')doTextSearch()">
+        <button onclick="doTextSearch()">Search</button>
+      </div>
+      <div id="aiStatus" style="display:none"></div>
+    </div>
+
+    <div class="form-panel">
+      <div class="section-title">Wine Details</div>
+      <div class="form-grid">
+        <div class="form-group full"><label>Wine Name</label><input type="text" id="wName" placeholder="e.g. 2023 Opulent"></div>
+        <div class="form-group"><label>Producer / Winery</label><input type="text" id="wProducer" placeholder="e.g. Baron's Creek"></div>
+        <div class="form-group"><label>Vintage Year</label><input type="number" id="wVintage" placeholder="2023" min="1900" max="2035"></div>
+        <div class="form-group"><label>Type / Varietal</label>
+          <select id="wType">
+            <option value="">Select...</option>
+            <option value="chardonnay">Chardonnay</option>
+            <option value="red-blend">Red Blend</option>
+            <option value="pinot-noir">Pinot Noir</option>
+            <option value="cabernet">Cabernet Sauvignon</option>
+            <option value="merlot">Merlot</option>
+            <option value="zinfandel">Zinfandel</option>
+            <option value="rose">Rosé</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Region</label><input type="text" id="wRegion" placeholder="e.g. Texas Hill Country"></div>
+        <div class="form-group"><label>Price Paid</label><input type="number" id="wPrice" placeholder="$" min="0" step="0.01"></div>
+        <div class="form-group"><label>Date Tried</label><input type="date" id="wDate"></div>
+        <div class="form-group"><label>Baron's Creek?</label>
+          <select id="wBC"><option value="0">No</option><option value="1">Yes</option></select>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <label style="display:block;margin-bottom:10px">Ratings</label>
+        <div class="ratings-section">
+          <div class="rating-block">
+            <label>Ryan</label>
+            <div class="stars" id="starsRyan" data-rating="0">
+              <span class="star" onclick="setRating('Ryan',1)">★</span>
+              <span class="star" onclick="setRating('Ryan',2)">★</span>
+              <span class="star" onclick="setRating('Ryan',3)">★</span>
+              <span class="star" onclick="setRating('Ryan',4)">★</span>
+              <span class="star" onclick="setRating('Ryan',5)">★</span>
+            </div>
+          </div>
+          <div class="rating-block">
+            <label>Pam</label>
+            <div class="stars" id="starsPam" data-rating="0">
+              <span class="star" onclick="setRating('Pam',1)">★</span>
+              <span class="star" onclick="setRating('Pam',2)">★</span>
+              <span class="star" onclick="setRating('Pam',3)">★</span>
+              <span class="star" onclick="setRating('Pam',4)">★</span>
+              <span class="star" onclick="setRating('Pam',5)">★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group full" style="margin-top:16px">
+        <label>Your Tasting Notes</label>
+        <textarea id="wNotes" placeholder="What did it taste like? Aromas, finish, food pairing..."></textarea>
+      </div>
+      <div class="form-group full" style="margin-top:14px">
+        <label>Professional Notes (from scan)</label>
+        <textarea id="wProNotes" placeholder="Auto-filled from AI scan, or enter manually..." style="min-height:60px"></textarea>
+      </div>
+      <div class="form-group full" style="margin-top:14px">
+        <label>Tags (comma-separated)</label>
+        <input type="text" id="wTags" placeholder="e.g. oaky, smooth, great with steak">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+        <button class="btn btn-gold" onclick="saveWine()">Save Wine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal"><div class="modal-handle"></div><div id="modalBody"></div></div>
+</div>
+
+<!-- Add Cellar Modal -->
+<div class="modal-overlay" id="cellarModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add to Cellar</div>
+    <div class="modal-subtitle">Track bottles on hand</div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Wine Name</label><input type="text" id="cName" placeholder="e.g. 2024 Campeon"></div>
+      <div class="form-group"><label>Producer</label><input type="text" id="cProducer" placeholder="Baron's Creek"></div>
+      <div class="form-group"><label>Vintage</label><input type="number" id="cVintage" placeholder="2024"></div>
+      <div class="form-group"><label>Type</label>
+        <select id="cType">
+          <option value="">Select...</option>
+          <option value="chardonnay">Chardonnay</option>
+          <option value="red-blend">Red Blend</option>
+          <option value="pinot-noir">Pinot Noir</option>
+          <option value="cabernet">Cabernet Sauvignon</option>
+          <option value="merlot">Merlot</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Bottles</label><input type="number" id="cQty" value="1" min="1"></div>
+      <div class="form-group"><label>Baron's Creek?</label>
+        <select id="cBC"><option value="0">No</option><option value="1">Yes</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('cellarModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCellar()">Add to Cellar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TYPE_LABELS={chardonnay:'Chardonnay','red-blend':'Red Blend','pinot-noir':'Pinot Noir',cabernet:'Cabernet Sauvignon',merlot:'Merlot',zinfandel:'Zinfandel',rose:'Rosé',other:'Other','':''};
+const TYPE_KEYS=Object.keys(TYPE_LABELS);
+
+let wines=JSON.parse(localStorage.getItem('webb_wines')||'[]');
+let cellar=JSON.parse(localStorage.getItem('webb_cellar')||'[]');
+let activeFilter='all', editingId=null, pendingPhotoB64=null;
+
+function saveData(){localStorage.setItem('webb_wines',JSON.stringify(wines));localStorage.setItem('webb_cellar',JSON.stringify(cellar));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+
+function switchTab(tab){
+  ['tasted','cellar','log'].forEach((t,i)=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+    document.querySelectorAll('.tab')[i].classList.toggle('active',t===tab);
+  });
+  if(tab==='tasted')renderTasted();
+  if(tab==='cellar')renderCellar();
+  renderStats();
+}
+
+function overall(w){
+  const r=w.ryanRating||0,p=w.pamRating||0;
+  if(r&&p)return((r+p)/2).toFixed(1);
+  if(r)return r.toFixed(1);
+  if(p)return p.toFixed(1);
+  return 0;
+}
+
+function renderStats(){
+  const tb=cellar.reduce((s,c)=>s+c.qty,0);
+  const rated=wines.filter(w=>overall(w)>0);
+  const avg=rated.length?(rated.reduce((s,w)=>s+parseFloat(overall(w)),0)/rated.length).toFixed(1):'—';
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${wines.length}</div><div class="stat-label">Tasted</div></div>
+    <div class="stat-card"><div class="stat-num">${tb}</div><div class="stat-label">In Cellar</div></div>
+    <div class="stat-card"><div class="stat-num">${avg}</div><div class="stat-label">Avg Rating</div></div>
+    <div class="stat-card"><div class="stat-num">${wines.filter(w=>w.bc).length}</div><div class="stat-label">Baron's Creek</div></div>`;
+}
+
+function renderFilters(){
+  const types=[...new Set(wines.map(w=>w.type).filter(Boolean))];
+  const filters=[{val:'all',label:'All'},{val:'bc',label:"Baron's Creek"},...types.map(t=>({val:t,label:TYPE_LABELS[t]||t}))];
+  document.getElementById('filterBar').innerHTML=filters.map(f=>`<button class="filter-btn ${activeFilter===f.val?'active':''}" onclick="setFilter('${f.val}')">${f.label}</button>`).join('');
+}
+function setFilter(f){activeFilter=f;renderFilters();renderTasted();}
+
+function renderTasted(){
+  renderFilters();
+  const sort=document.getElementById('sortSelect').value;
+  let list=[...wines];
+  if(activeFilter==='bc')list=list.filter(w=>w.bc);
+  else if(activeFilter!=='all')list=list.filter(w=>w.type===activeFilter);
+  list.sort((a,b)=>{
+    if(sort==='date-desc')return new Date(b.date||0)-new Date(a.date||0);
+    if(sort==='date-asc')return new Date(a.date||0)-new Date(b.date||0);
+    if(sort==='rating-desc')return overall(b)-overall(a);
+    if(sort==='rating-asc')return overall(a)-overall(b);
+    return 0;
+  });
+  const grid=document.getElementById('wineGrid');
+  if(!list.length){grid.innerHTML=`<div class="empty-state"><div class="icon">🍷</div><p>No wines logged yet.<br>Tap <strong>Log Wine</strong> to add your first.</p></div>`;return;}
+  grid.innerHTML=list.map(w=>{
+    const ov=overall(w);
+    const tags=(w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+    return`<div class="wine-card ${w.type||'other'}" onclick="openDetail('${w.id}')">
+      <div class="card-top">
+        <div>
+          <div class="wine-name">${w.name}</div>
+          <div class="wine-meta">${[w.producer,TYPE_LABELS[w.type],w.region].filter(Boolean).join(' · ')}</div>
+          <div style="margin-top:4px">${w.bc?'<span class="badge badge-bc">Baron\'s Creek</span>':''}${w.price?`<span class="badge badge-price">$${parseFloat(w.price).toFixed(0)}</span>`:''}</div>
+        </div>
+        <div class="card-right">
+          <div class="overall-rating">${ov||'—'}<span>/5</span></div>
+          <div class="card-ratings">${w.ryanRating?`<div class="mini-rating">R: <strong>${w.ryanRating}</strong></div>`:''}${w.pamRating?`<div class="mini-rating">P: <strong>${w.pamRating}</strong></div>`:''}</div>
+        </div>
+      </div>
+      ${w.notes?`<div class="card-notes">${w.notes.slice(0,120)}${w.notes.length>120?'…':''}</div>`:''}
+      ${tags?`<div class="tag-row">${tags}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function openDetail(id){
+  const w=wines.find(x=>x.id===id);if(!w)return;
+  const ov=overall(w);
+  const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-title">${w.name}</div>
+    <div class="modal-subtitle">${[w.producer,w.region,w.vintage].filter(Boolean).join(' · ')}</div>
+    <div class="big-rating"><div class="num">${ov||'—'}</div><div class="lbl">Overall / 5</div></div>
+    <div class="ratings-display">
+      <div class="rdc"><div class="rname">Ryan</div><div class="rval">${w.ryanRating?stars(w.ryanRating):'—'}</div>${w.ryanRating?`<div style="font-size:11px;color:var(--muted);margin-top:4px">${w.ryanRating}/5</div>`:''}</div>
+      <div class="rdc"><div class="rname">Pam</div><div class="rval">${w.pamRating?stars(w.pamRating):'—'}</div>${w.pamRating?`<div style="font-size:11px;color:var(--muted);margin-top:4px">${w.pamRating}/5</div>`:''}</div>
+    </div>
+    <div class="modal-section" style="margin-top:16px">
+      <div class="modal-section-title">Details</div>
+      ${w.type?`<div class="detail-row"><span class="detail-label">Type</span><span class="detail-val">${TYPE_LABELS[w.type]}</span></div>`:''}
+      ${w.producer?`<div class="detail-row"><span class="detail-label">Producer</span><span class="detail-val">${w.producer}</span></div>`:''}
+      ${w.region?`<div class="detail-row"><span class="detail-label">Region</span><span class="detail-val">${w.region}</span></div>`:''}
+      ${w.vintage?`<div class="detail-row"><span class="detail-label">Vintage</span><span class="detail-val">${w.vintage}</span></div>`:''}
+      ${w.price?`<div class="detail-row"><span class="detail-label">Price Paid</span><span class="detail-val">$${parseFloat(w.price).toFixed(2)}</span></div>`:''}
+      ${w.date?`<div class="detail-row"><span class="detail-label">Date Tried</span><span class="detail-val">${new Date(w.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span></div>`:''}
+      ${w.bc?`<div class="detail-row"><span class="detail-label">Baron's Creek</span><span class="detail-val" style="color:var(--gold)">✓ Yes</span></div>`:''}
+    </div>
+    ${w.notes?`<div class="modal-section"><div class="modal-section-title">Your Tasting Notes</div><div class="notes-block">${w.notes}</div></div>`:''}
+    ${w.proNotes?`<div class="modal-section"><div class="modal-section-title">Professional Notes</div><div class="notes-block">${w.proNotes}</div></div>`:''}
+    ${w.tags&&w.tags.length?`<div class="tag-row" style="margin-bottom:16px">${w.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="deleteWine('${w.id}')">Delete</button>
+      <button class="btn btn-secondary" onclick="editWine('${w.id}')">Edit</button>
+      <button class="btn btn-primary" onclick="closeDetailModal()">Close</button>
+    </div>`;
+  document.getElementById('detailModal').classList.add('open');
+}
+function closeDetailModal(){document.getElementById('detailModal').classList.remove('open');}
+function deleteWine(id){if(!confirm('Delete this wine?'))return;wines=wines.filter(w=>w.id!==id);saveData();closeDetailModal();renderTasted();renderStats();}
+function editWine(id){
+  const w=wines.find(x=>x.id===id);if(!w)return;
+  editingId=id;closeDetailModal();switchTab('log');
+  setTimeout(()=>{
+    document.getElementById('wName').value=w.name||'';
+    document.getElementById('wProducer').value=w.producer||'';
+    document.getElementById('wVintage').value=w.vintage||'';
+    document.getElementById('wType').value=w.type||'';
+    document.getElementById('wRegion').value=w.region||'';
+    document.getElementById('wPrice').value=w.price||'';
+    document.getElementById('wDate').value=w.date||'';
+    document.getElementById('wBC').value=w.bc?'1':'0';
+    document.getElementById('wNotes').value=w.notes||'';
+    document.getElementById('wProNotes').value=w.proNotes||'';
+    document.getElementById('wTags').value=(w.tags||[]).join(', ');
+    if(w.ryanRating)setRating('Ryan',w.ryanRating);
+    if(w.pamRating)setRating('Pam',w.pamRating);
+  },120);
+}
+
+function renderCellar(){
+  const grid=document.getElementById('cellarGrid');
+  if(!cellar.length){grid.innerHTML=`<div class="empty-state"><div class="icon">🍾</div><p>No bottles tracked yet.</p></div>`;return;}
+  grid.innerHTML=cellar.map(c=>`
+    <div class="cellar-card">
+      <div class="cellar-info">
+        <div class="cellar-name">${c.name}</div>
+        <div class="cellar-meta">${[c.producer,TYPE_LABELS[c.type],c.vintage].filter(Boolean).join(' · ')}</div>
+        ${c.bc?'<span class="badge badge-bc" style="margin-top:4px;display:inline-block">Baron\'s Creek</span>':''}
+      </div>
+      <div class="cellar-qty">
+        <button class="qty-btn" onclick="adjustQty('${c.id}',-1)">−</button>
+        <div class="qty-num">${c.qty}</div>
+        <button class="qty-btn" onclick="adjustQty('${c.id}',1)">+</button>
+      </div>
+    </div>`).join('');
+}
+function adjustQty(id,delta){
+  const item=cellar.find(c=>c.id===id);if(!item)return;
+  item.qty=Math.max(0,item.qty+delta);
+  if(item.qty===0)cellar=cellar.filter(c=>c.id!==id);
+  saveData();renderCellar();renderStats();
+}
+function openAddCellar(){document.getElementById('cellarModal').classList.add('open');}
+function saveCellar(){
+  const name=document.getElementById('cName').value.trim();
+  if(!name){alert('Enter a wine name.');return;}
+  cellar.push({id:uid(),name,producer:document.getElementById('cProducer').value.trim(),vintage:document.getElementById('cVintage').value.trim(),type:document.getElementById('cType').value,qty:parseInt(document.getElementById('cQty').value)||1,bc:document.getElementById('cBC').value==='1'});
+  saveData();renderCellar();renderStats();
+  document.getElementById('cellarModal').classList.remove('open');
+  ['cName','cProducer','cVintage'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cQty').value=1;
+}
+
+function setRating(who,val){
+  const el=document.getElementById('stars'+who);
+  el.dataset.rating=val;
+  el.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('filled',i<val));
+}
+function clearForm(){
+  editingId=null;pendingPhotoB64=null;
+  ['wName','wProducer','wRegion','wPrice','wNotes','wProNotes','wTags','wVintage'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wType').value='';document.getElementById('wBC').value='0';document.getElementById('wDate').value='';
+  ['Ryan','Pam'].forEach(w=>setRating(w,0));
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('aiStatus').style.display='none';
+  document.getElementById('searchInput').value='';
+}
+function saveWine(){
+  const name=document.getElementById('wName').value.trim();
+  if(!name){alert('Please enter a wine name.');return;}
+  const rR=parseInt(document.getElementById('starsRyan').dataset.rating)||0;
+  const pR=parseInt(document.getElementById('starsPam').dataset.rating)||0;
+  const tags=document.getElementById('wTags').value?document.getElementById('wTags').value.split(',').map(t=>t.trim()).filter(Boolean):[];
+  const wine={id:editingId||uid(),name,producer:document.getElementById('wProducer').value.trim(),vintage:document.getElementById('wVintage').value.trim(),type:document.getElementById('wType').value,region:document.getElementById('wRegion').value.trim(),price:document.getElementById('wPrice').value,date:document.getElementById('wDate').value,bc:document.getElementById('wBC').value==='1',ryanRating:rR,pamRating:pR,notes:document.getElementById('wNotes').value.trim(),proNotes:document.getElementById('wProNotes').value.trim(),tags};
+  if(editingId)wines=wines.map(w=>w.id===editingId?wine:w);
+  else wines.push(wine);
+  saveData();clearForm();switchTab('tasted');
+}
+
+function showStatus(type,msg){
+  const el=document.getElementById('aiStatus');
+  el.style.display='flex';el.className='ai-status '+type;
+  el.innerHTML=type==='loading'?`<div class="spinner"></div><span>${msg}</span>`:`<span>${type==='success'?'✓':'✗'}</span><span>${msg}</span>`;
+}
+
+function handlePhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  showStatus('loading','Processing image…');
+  document.getElementById('aiStatus').style.display='flex';
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    // Resize to max 1024px and compress to JPEG to keep payload small
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=1024;
+      let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',0.85);
+      document.getElementById('photoPreview').src=compressed;
+      document.getElementById('photoPreview').style.display='block';
+      pendingPhotoB64=compressed.split(',')[1];
+      doPhotoScan();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+const AI_SYSTEM = `You are a wine expert with deep knowledge of wines worldwide. When given a wine label image or a wine name, identify the wine and provide details from your knowledge. Respond with ONLY a valid JSON object — absolutely no prose, no markdown fences, no explanation before or after the JSON. The JSON must have exactly these keys (use null for unknown fields):
+{
+  "name": "full wine name including vintage year if visible",
+  "producer": "winery or producer name",
+  "vintage": "4-digit year as a string, or null",
+  "type": "MUST be one of exactly: chardonnay, red-blend, pinot-noir, cabernet, merlot, zinfandel, rose, other",
+  "region": "region or appellation",
+  "typicalPrice": "typical retail price range e.g. $12-$15",
+  "proNotes": "2-3 sentences describing flavor profile, aromas, and structure based on your knowledge",
+  "tags": ["array", "of", "3-6", "short", "flavor", "descriptor", "tags"]
+}
+Your ENTIRE response must be valid JSON parseable by JSON.parse() with no extra characters.`;
+
+async function callClaude(messages){
+  const body={model:'claude-sonnet-4-20250514',max_tokens:800,system:AI_SYSTEM,messages};
+  var apiKey=getAPIKey();
+  if(!apiKey){checkAPIKeySetup();throw new Error('No API key set');}
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)
+  });
+  const data=await resp.json();
+  if(data.error) throw new Error('API error: '+data.error.type+' - '+data.error.message);
+  if(!data.content||!data.content.length) throw new Error('No content. Response: '+JSON.stringify(data).slice(0,200));
+  const text=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('').trim();
+  if(!text) throw new Error('No text block. Types: '+data.content.map(function(b){return b.type;}).join(','));
+  return text;
+}
+
+function parseWineJSON(raw){
+  var cleaned=raw.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+  try{return JSON.parse(cleaned);}catch(e){}
+  var match=cleaned.match(/\{[\s\S]*\}/);
+  if(match){try{return JSON.parse(match[0]);}catch(e2){throw new Error('JSON parse failed. Raw starts: '+cleaned.slice(0,150));}}
+  throw new Error('No JSON found. Raw: '+cleaned.slice(0,150));
+}
+
+async function doPhotoScan(){
+  if(!pendingPhotoB64)return;
+  showStatus('loading','Identifying label...');
+  try{
+    var raw=await callClaude([{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:'image/jpeg',data:pendingPhotoB64}},
+      {type:'text',text:'What wine is this? Identify it from the label and return the JSON object with all details you know about it.'}
+    ]}]);
+    // Show raw response for debugging
+    document.getElementById('aiStatus').innerHTML='<span style="font-size:10px;word-break:break-all;color:#e8c97a">RAW: '+raw.slice(0,300)+'</span>';
+    var parsed=parseWineJSON(raw);
+    populateForm(parsed);
+    showStatus('success','Identified: '+(parsed.name||'wine')+' - review and add your ratings below.');
+  }catch(err){
+    console.error('Photo scan error:',err);
+    showStatus('error',err.message);
+  }
+}
+
+async function doTextSearch(){
+  var query=document.getElementById('searchInput').value.trim();
+  if(!query)return;
+  showStatus('loading','Looking up wine...');
+  try{
+    var raw=await callClaude([{role:'user',content:'Wine: "'+query+'". Return the JSON object with all details you know about this wine.'}]);
+    var parsed=parseWineJSON(raw);
+    populateForm(parsed);
+    showStatus('success','Found: '+(parsed.name||query)+' - form filled below.');
+  }catch(err){
+    console.error('Text search error:',err);
+    showStatus('error',err.message);
+  }
+}
+
+
+function populateForm(d){
+  if(d.name)document.getElementById('wName').value=d.name;
+  if(d.producer)document.getElementById('wProducer').value=d.producer;
+  if(d.vintage)document.getElementById('wVintage').value=d.vintage;
+  if(d.region)document.getElementById('wRegion').value=d.region;
+  if(d.typicalPrice){const p=d.typicalPrice.replace(/[^0-9.\-]/g,'').split('-')[0];if(p)document.getElementById('wPrice').value=p;}
+  if(d.proNotes)document.getElementById('wProNotes').value=d.proNotes;
+  if(d.tags&&d.tags.length)document.getElementById('wTags').value=d.tags.join(', ');
+  if(d.type){const t=d.type.toLowerCase().replace(/\s+/g,'-');if(TYPE_KEYS.includes(t))document.getElementById('wType').value=t;}
+  if(d.producer&&d.producer.toLowerCase().includes("baron"))document.getElementById('wBC').value='1';
+  if(!document.getElementById('wDate').value)document.getElementById('wDate').value=new Date().toISOString().split('T')[0];
+}
+
+// Init - pre-load BC shipment
+if(!localStorage.getItem('webb_init')){
+  cellar=[
+    {id:uid(),name:"2023 Opulent",producer:"Baron's Creek",type:'red-blend',vintage:'2023',qty:1,bc:true},
+    {id:uid(),name:"2024 Campeon",producer:"Baron's Creek",type:'red-blend',vintage:'2024',qty:1,bc:true},
+    {id:uid(),name:"2024 Pinot Noir",producer:"Baron's Creek",type:'pinot-noir',vintage:'2024',qty:1,bc:true},
+    {id:uid(),name:"2025 Celebration",producer:"Baron's Creek",type:'other',vintage:'2025',qty:1,bc:true},
+  ];
+  localStorage.setItem('webb_init','1');
+  saveData();
+}
+
+checkAPIKeySetup();
+renderStats();
+renderTasted();
+</script>
+</body>
+</html>
