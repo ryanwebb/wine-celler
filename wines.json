@@ -43,5 +43,28 @@
       "light",
       "refreshing"
     ]
+  },
+  {
+    "id": "mnrctgru2jf5lnlt0nc",
+    "name": "Barons Creek Opulent Red Blend",
+    "producer": "Barons Creek",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "California",
+    "price": "39.20",
+    "date": "2026-04-08",
+    "bc": true,
+    "ryanRating": 5,
+    "pamRating": 0,
+    "notes": "",
+    "proNotes": "This red blend typically showcases rich dark fruit flavors with notes of blackberry, plum, and hints of vanilla from oak aging. The wine offers a full-bodied structure with smooth tannins and a lingering finish with subtle spice notes.",
+    "tags": [
+      "dark-fruit",
+      "full-bodied",
+      "vanilla",
+      "smooth",
+      "spicy",
+      "rich"
+    ]
   }
 ]
