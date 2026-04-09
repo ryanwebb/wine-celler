@@ -21,5 +21,27 @@
       "soft-tannins",
       "approachable"
     ]
+  },
+  {
+    "id": "mnqtgzv6ln1jegy4c2e",
+    "name": "Barons Creek Vineyards Celebration 2025",
+    "producer": "Barons Creek Vineyards",
+    "vintage": "2025",
+    "type": "other",
+    "region": "",
+    "price": "",
+    "date": "2026-04-09",
+    "bc": true,
+    "ryanRating": 0,
+    "pamRating": 0,
+    "notes": "",
+    "proNotes": "This appears to be a white wine from Barons Creek Vineyards with a 2025 vintage, which would be a future release. Without being able to clearly identify the specific grape variety or having detailed knowledge of this particular producer, it's difficult to provide accurate tasting notes.",
+    "tags": [
+      "white",
+      "crisp",
+      "celebration",
+      "light",
+      "refreshing"
+    ]
   }
 ]
