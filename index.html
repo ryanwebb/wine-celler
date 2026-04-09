@@ -152,6 +152,10 @@
   .empty-state .icon{font-size:40px;margin-bottom:12px;}
   .empty-state p{font-size:13px;line-height:1.6;}
 
+  .sync-status{position:fixed;top:12px;right:12px;padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;z-index:50;display:none;}
+  .sync-status.loading{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+  .sync-status.success{background:rgba(50,180,80,.15);color:#7dd890;border:1px solid rgba(50,180,80,.3);}
+  .sync-status.error{background:rgba(180,60,60,.15);color:#e08080;border:1px solid rgba(180,60,60,.3);}
   @media(max-width:480px){
     .stats-bar{grid-template-columns:repeat(2,1fr);}
     .form-grid{grid-template-columns:1fr;}
@@ -165,6 +169,7 @@
 
 
 <div class="app">
+<div id="syncStatus" class="sync-status"></div>
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
@@ -342,24 +347,104 @@
 </div>
 
 <script>
-// ── API Key ────────────────────────────────────────────────────────────────
+// ── Setup & Config ─────────────────────────────────────────────────────────
 function getAPIKey(){ return localStorage.getItem('webb_api_key')||''; }
+function getGHUser(){ return localStorage.getItem('webb_gh_user')||''; }
+function getGHRepo(){ return localStorage.getItem('webb_gh_repo')||''; }
+function getGHPat(){ return localStorage.getItem('webb_gh_pat')||''; }
 
-function saveAPIKey(){
+function saveSetup(){
   var key=document.getElementById('apiKeyInput').value.trim();
+  var user=document.getElementById('ghUserInput').value.trim();
+  var repo=document.getElementById('ghRepoInput').value.trim();
+  var pat=document.getElementById('ghPatInput').value.trim();
   var err=document.getElementById('apiKeyError');
   err.style.display='none';
-  if(!key){ err.style.display='block'; err.textContent='Please paste your API key.'; return; }
+  if(!key){err.style.display='block';err.textContent='Please enter your Anthropic API key.';return;}
+  if(!user){err.style.display='block';err.textContent='Please enter your GitHub username.';return;}
+  if(!repo){err.style.display='block';err.textContent='Please enter your GitHub repo name.';return;}
+  if(!pat){err.style.display='block';err.textContent='Please enter your GitHub PAT.';return;}
   localStorage.setItem('webb_api_key',key);
+  localStorage.setItem('webb_gh_user',user);
+  localStorage.setItem('webb_gh_repo',repo);
+  localStorage.setItem('webb_gh_pat',pat);
   document.getElementById('apiSetup').style.display='none';
-  renderStats(); renderTasted();
+  loadFromGitHub();
 }
 
 function checkAPIKeySetup(){
-  if(!getAPIKey()){
+  if(!getAPIKey()||!getGHPat()){
+    var u=document.getElementById('ghUserInput');
+    var r=document.getElementById('ghRepoInput');
+    if(u&&getGHUser()) u.value=getGHUser();
+    if(r&&getGHRepo()) r.value=getGHRepo();
     document.getElementById('apiSetup').style.display='flex';
+    return true;
   }
+  return false;
 }
+
+// ── GitHub Data Backend ─────────────────────────────────────────────────────
+var GH_API='https://api.github.com';
+var _ghSHAs={};
+
+async function ghRequest(method, path, body){
+  var opts={method:method,headers:{'Authorization':'token '+getGHPat(),'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'}};
+  if(body) opts.body=JSON.stringify(body);
+  var resp=await fetch(GH_API+path,opts);
+  var data=await resp.json();
+  if(!resp.ok) throw new Error('GitHub '+resp.status+': '+(data.message||'error'));
+  return data;
+}
+
+async function loadFromGitHub(){
+  var user=getGHUser(),repo=getGHRepo();
+  if(!user||!repo) return;
+  showSyncStatus('loading','Loading shared data...');
+  try{
+    try{ var wData=await ghRequest('GET','/repos/'+user+'/'+repo+'/contents/wines.json'); wines=JSON.parse(atob(wData.content.replace(/\n/g,''))); _ghSHAs.wines=wData.sha; }catch(e){ wines=[]; }
+    try{ var cData=await ghRequest('GET','/repos/'+user+'/'+repo+'/contents/cellar.json'); cellar=JSON.parse(atob(cData.content.replace(/\n/g,''))); _ghSHAs.cellar=cData.sha; }catch(e){
+      if(!cellar.length) cellar=[
+        {id:uid(),name:"2023 Opulent",producer:"Baron's Creek",type:'red-blend',vintage:'2023',qty:1,bc:true},
+        {id:uid(),name:"2024 Campeon",producer:"Baron's Creek",type:'red-blend',vintage:'2024',qty:1,bc:true},
+        {id:uid(),name:"2024 Pinot Noir",producer:"Baron's Creek",type:'pinot-noir',vintage:'2024',qty:1,bc:true},
+        {id:uid(),name:"2025 Celebration",producer:"Baron's Creek",type:'other',vintage:'2025',qty:1,bc:true},
+      ];
+    }
+    showSyncStatus('success','Synced ✓');
+    setTimeout(function(){ document.getElementById('syncStatus').style.display='none'; },2500);
+  }catch(e){ showSyncStatus('error','Load failed: '+e.message); }
+  renderStats(); renderTasted();
+}
+
+async function saveToGitHub(){
+  var user=getGHUser(),repo=getGHRepo();
+  if(!user||!repo||!getGHPat()) return;
+  showSyncStatus('loading','Saving...');
+  try{
+    var wContent=btoa(unescape(encodeURIComponent(JSON.stringify(wines,null,2))));
+    var wBody={message:'Update wines',content:wContent};
+    if(_ghSHAs.wines) wBody.sha=_ghSHAs.wines;
+    var wResp=await ghRequest('PUT','/repos/'+user+'/'+repo+'/contents/wines.json',wBody);
+    _ghSHAs.wines=wResp.content.sha;
+    var cContent=btoa(unescape(encodeURIComponent(JSON.stringify(cellar,null,2))));
+    var cBody={message:'Update cellar',content:cContent};
+    if(_ghSHAs.cellar) cBody.sha=_ghSHAs.cellar;
+    var cResp=await ghRequest('PUT','/repos/'+user+'/'+repo+'/contents/cellar.json',cBody);
+    _ghSHAs.cellar=cResp.content.sha;
+    showSyncStatus('success','Saved ✓');
+    setTimeout(function(){ document.getElementById('syncStatus').style.display='none'; },2500);
+  }catch(e){ showSyncStatus('error','Save failed: '+e.message); }
+}
+
+function showSyncStatus(type,msg){
+  var el=document.getElementById('syncStatus');
+  if(!el) return;
+  el.style.display='block';
+  el.className='sync-status '+type;
+  el.textContent=msg;
+}
+
 
 const TYPE_LABELS={chardonnay:'Chardonnay','red-blend':'Red Blend','pinot-noir':'Pinot Noir',cabernet:'Cabernet Sauvignon',merlot:'Merlot',zinfandel:'Zinfandel',rose:'Rosé',other:'Other','':''};
 const TYPE_KEYS=Object.keys(TYPE_LABELS);
@@ -476,7 +561,7 @@ function openDetail(id){
   document.getElementById('detailModal').classList.add('open');
 }
 function closeDetailModal(){document.getElementById('detailModal').classList.remove('open');}
-function deleteWine(id){if(!confirm('Delete this wine?'))return;wines=wines.filter(w=>w.id!==id);saveData();closeDetailModal();renderTasted();renderStats();}
+function deleteWine(id){if(!confirm('Delete this wine?'))return;wines=wines.filter(w=>w.id!==id);saveData(); saveToGitHub();closeDetailModal();renderTasted();renderStats();}
 function editWine(id){
   const w=wines.find(x=>x.id===id);if(!w)return;
   editingId=id;closeDetailModal();switchTab('log');
@@ -518,14 +603,14 @@ function adjustQty(id,delta){
   const item=cellar.find(c=>c.id===id);if(!item)return;
   item.qty=Math.max(0,item.qty+delta);
   if(item.qty===0)cellar=cellar.filter(c=>c.id!==id);
-  saveData();renderCellar();renderStats();
+  saveData(); saveToGitHub();renderCellar();renderStats();
 }
 function openAddCellar(){document.getElementById('cellarModal').classList.add('open');}
 function saveCellar(){
   const name=document.getElementById('cName').value.trim();
   if(!name){alert('Enter a wine name.');return;}
   cellar.push({id:uid(),name,producer:document.getElementById('cProducer').value.trim(),vintage:document.getElementById('cVintage').value.trim(),type:document.getElementById('cType').value,qty:parseInt(document.getElementById('cQty').value)||1,bc:document.getElementById('cBC').value==='1'});
-  saveData();renderCellar();renderStats();
+  saveData(); saveToGitHub();renderCellar();renderStats();
   document.getElementById('cellarModal').classList.remove('open');
   ['cName','cProducer','cVintage'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('cQty').value=1;
@@ -554,7 +639,7 @@ function saveWine(){
   const wine={id:editingId||uid(),name,producer:document.getElementById('wProducer').value.trim(),vintage:document.getElementById('wVintage').value.trim(),type:document.getElementById('wType').value,region:document.getElementById('wRegion').value.trim(),price:document.getElementById('wPrice').value,date:document.getElementById('wDate').value,bc:document.getElementById('wBC').value==='1',ryanRating:rR,pamRating:pR,notes:document.getElementById('wNotes').value.trim(),proNotes:document.getElementById('wProNotes').value.trim(),tags};
   if(editingId)wines=wines.map(w=>w.id===editingId?wine:w);
   else wines.push(wine);
-  saveData();clearForm();switchTab('tasted');
+  saveData(); saveToGitHub();clearForm();switchTab('tasted');
 }
 
 function showStatus(type,msg){
@@ -715,20 +800,9 @@ function populateForm(d){
 }
 
 // Init - pre-load BC shipment
-if(!localStorage.getItem('webb_init')){
-  cellar=[
-    {id:uid(),name:"2023 Opulent",producer:"Baron's Creek",type:'red-blend',vintage:'2023',qty:1,bc:true},
-    {id:uid(),name:"2024 Campeon",producer:"Baron's Creek",type:'red-blend',vintage:'2024',qty:1,bc:true},
-    {id:uid(),name:"2024 Pinot Noir",producer:"Baron's Creek",type:'pinot-noir',vintage:'2024',qty:1,bc:true},
-    {id:uid(),name:"2025 Celebration",producer:"Baron's Creek",type:'other',vintage:'2025',qty:1,bc:true},
-  ];
-  localStorage.setItem('webb_init','1');
-  saveData();
+if(!checkAPIKeySetup()){
+  loadFromGitHub();
 }
-
-checkAPIKeySetup();
-renderStats();
-renderTasted();
 </script>
 <!-- API Key Setup Overlay -->
 <div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
@@ -739,9 +813,16 @@ renderTasted();
     <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:24px;text-align:left;">
       <div style="font-size:12px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Anthropic API Key</div>
       <div style="font-size:12px;color:#7a5c50;margin-bottom:14px;line-height:1.6;">Paste your API key below. It saves locally on this device and is never shared.</div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">Anthropic API Key</div>
       <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">GitHub Username</div>
+      <input type="text" id="ghUserInput" placeholder="e.g. ryanwebb" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">GitHub Repo Name</div>
+      <input type="text" id="ghRepoInput" placeholder="e.g. wine-celler" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">GitHub Personal Access Token</div>
+      <input type="password" id="ghPatInput" placeholder="ghp_..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
       <div id="apiKeyError" style="display:none;color:#e08080;font-size:12px;margin-bottom:10px;"></div>
-      <button onclick="(function(){var k=document.getElementById('apiKeyInput').value.trim();var e=document.getElementById('apiKeyError');e.style.display='none';if(!k){e.style.display='block';e.textContent='Please paste your API key.';return;}localStorage.setItem('webb_api_key',k);document.getElementById('apiSetup').style.display='none';renderStats();renderTasted();})()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
+      <button onclick="saveSetup()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
     </div>
     <div style="font-size:11px;color:#7a5c50;margin-top:16px;line-height:1.6;">Get your key at <span style="color:#c9a84c;">console.anthropic.com</span><br>~$0.01 per 10 wine scans</div>
   </div>
