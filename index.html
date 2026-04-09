@@ -168,7 +168,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v11</div>
+    <div class="header-sub">Ryan &amp; Pam · v12</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -678,7 +678,7 @@ function showWinePickList(wines, query){
   el.style.marginTop='14px';
   var html='<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#c9a84c;margin-bottom:10px;">Select a Wine</div>';
   wines.forEach(function(w,i){
-    html+='<div onclick="selectWineFromList('+i+')" style="padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);margin-bottom:8px;cursor:pointer;" onmouseover="this.style.borderColor='rgba(201,168,76,0.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">'
+    html+='<div onclick="selectWineFromList('+i+')" style="padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);margin-bottom:8px;cursor:pointer;">'
       +'<div style="font-family:Cormorant Garamond,serif;font-size:17px;color:#faf7f2;">'+w.name+'</div>'
       +'<div style="font-size:11px;color:#7a5c50;margin-top:2px;">'+(w.producer||'')+(w.region?' · '+w.region:'')+(w.typicalPrice?' · '+w.typicalPrice:'')+'</div>'
       +'</div>';
