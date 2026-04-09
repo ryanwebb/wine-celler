@@ -160,28 +160,12 @@
 </head>
 <body>
 
-<!-- API Key Setup Overlay -->
-<div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
-  <div style="max-width:400px;width:100%;text-align:center;">
-    <div style="font-size:40px;margin-bottom:16px;">🍷</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#faf7f2;margin-bottom:8px;">Webb Wine Cellar</div>
-    <div style="font-size:11px;color:#7a5c50;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">One-time setup</div>
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:24px;text-align:left;">
-      <div style="font-size:12px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Anthropic API Key</div>
-      <div style="font-size:12px;color:#7a5c50;margin-bottom:14px;line-height:1.6;">Paste your API key below. It saves locally on this device and is never shared.</div>
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
-      <div id="apiKeyError" style="display:none;color:#e08080;font-size:12px;margin-bottom:10px;"></div>
-      <button onclick="saveAPIKey()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
-    </div>
-    <div style="font-size:11px;color:#7a5c50;margin-top:16px;line-height:1.6;">Get your key at <span style="color:#c9a84c;">console.anthropic.com</span><br>~$0.01 per 10 wine scans</div>
-  </div>
-</div>
 
 <div class="app">
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v9</div>
+    <div class="header-sub">Ryan &amp; Pam · v10</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -743,5 +727,22 @@ checkAPIKeySetup();
 renderStats();
 renderTasted();
 </script>
+<!-- API Key Setup Overlay -->
+<div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <div style="max-width:400px;width:100%;text-align:center;">
+    <div style="font-size:40px;margin-bottom:16px;">🍷</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#faf7f2;margin-bottom:8px;">Webb Wine Cellar</div>
+    <div style="font-size:11px;color:#7a5c50;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">One-time setup</div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:24px;text-align:left;">
+      <div style="font-size:12px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Anthropic API Key</div>
+      <div style="font-size:12px;color:#7a5c50;margin-bottom:14px;line-height:1.6;">Paste your API key below. It saves locally on this device and is never shared.</div>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px;color:#f5f0e8;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;">
+      <div id="apiKeyError" style="display:none;color:#e08080;font-size:12px;margin-bottom:10px;"></div>
+      <button onclick="saveAPIKey()" style="width:100%;padding:14px;border-radius:8px;border:none;background:#c9a84c;color:#1a0f0f;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Save & Continue</button>
+    </div>
+    <div style="font-size:11px;color:#7a5c50;margin-top:16px;line-height:1.6;">Get your key at <span style="color:#c9a84c;">console.anthropic.com</span><br>~$0.01 per 10 wine scans</div>
+  </div>
+</div>
+
 </body>
 </html>
