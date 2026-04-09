@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v20</div>
+    <div class="header-sub">Ryan &amp; Pam · v21</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -825,16 +825,20 @@ async function getRecommendation(type){
   profile+='ALREADY TRIED — exclude these: '+(allWines.length?allWines.join(', '):'none')+'. ';
   profile+='WISHLIST — also exclude: '+(wishlist.length?wishlist.join(', '):'none')+'.';
 
+  var bottleRule=' CRITICAL: the "name" field must be a specific wine bottle with producer and label included (e.g. "Catena Zapata Adrianna Malbec" not just "Malbec"). Never use a grape variety alone as the name.';
+
   var prompt;
   if(type==='red'){
     prompt='You are a sommelier. Recommend 3 red wine bottles for this taste profile: '+profile
       +' Stick to styles they already enjoy (red blends, Cabernet, Merlot, smooth dark-fruit reds).'
+      +bottleRule
       +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
       +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
       +' No prose, no markdown fences, just the raw JSON array.';
   } else if(type==='white'){
     prompt='You are a sommelier. Recommend 3 white wine bottles for this taste profile: '+profile
       +' Stick to styles they already enjoy (oaky Chardonnay, full-bodied whites, more oak than butter).'
+      +bottleRule
       +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
       +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
       +' No prose, no markdown fences, just the raw JSON array.';
@@ -842,6 +846,7 @@ async function getRecommendation(type){
     prompt='You are a sommelier. Recommend 3 ADVENTUROUS wines slightly outside this person\'s usual comfort zone, but chosen because you genuinely think they will love them based on their profile: '+profile
       +' Their usual go-tos are oaky Chardonnay and red blends. Push them somewhere interesting — think grapes or regions they likely haven\'t explored: e.g. Tempranillo, Malbec, GSM/Grenache blends, Viognier, white Burgundy/Mâcon, Albariño with body, Nero d\'Avola, Carménère, or similar.'
       +' Avoid anything sweet or thin. Each pick should be a genuine "I think you\'ll love this" stretch recommendation — different grape or region from their norm, but matching their flavor DNA (dry, some body/structure, dark or stone fruit, not flabby).'
+      +bottleRule
       +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
       +' reason should explain both WHY it\'s a stretch AND why they\'ll love it (1-2 sentences). searchUrl is a wine-searcher.com search URL.'
       +' No prose, no markdown fences, just the raw JSON array.';
@@ -854,14 +859,16 @@ async function getRecommendation(type){
     try{arr=JSON.parse(cleaned);}catch(e){var m=cleaned.match(/\[[\s\S]*\]/);if(m)arr=JSON.parse(m[0]);else throw new Error('Could not parse recommendations');}
     statusEl.style.display='none';
     resultsEl.innerHTML=arr.map(function(r){
+      // Build a robust search term: prefer "name + producer" combo to avoid generic grape-only searches
+      var searchTerm=(r.producer&&r.name.toLowerCase().indexOf(r.producer.toLowerCase())===-1)?r.producer+' '+r.name:r.name;
       return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:16px;">'
         +'<div style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--white);margin-bottom:3px;">'+r.name+'</div>'
         +'<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">'+[r.producer,r.region,r.typicalPrice].filter(Boolean).join(' · ')+'</div>'
         +'<div style="font-size:12px;color:var(--cream);font-style:italic;margin-bottom:12px;line-height:1.5;">'+r.reason+'</div>'
         +'<div style="display:flex;gap:8px;">'
         +'<button onclick="addToWishlist('+JSON.stringify(r).replace(/"/g,"&quot;")+')" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">+ Wishlist</button>'
-        +'<a href="https://www.totalwine.com/search/all?text='+encodeURIComponent(r.name)+'" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Total Wine</a>'
-        +'<a href="https://www.wine-searcher.com/find/'+encodeURIComponent(r.name)+'/1/USA/TX/75407/-/-/1" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Wine-Searcher</a>'
+        +'<a href="https://www.totalwine.com/search/all?text='+encodeURIComponent(searchTerm)+'" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Total Wine</a>'
+        +'<a href="https://www.wine-searcher.com/find/'+encodeURIComponent(searchTerm)+'/1/USA/TX/75407/-/-/1" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Wine-Searcher</a>'
         +'</div>'
         +'</div>';
     }).join('');
