@@ -88,5 +88,28 @@
       "spice",
       "silky"
     ]
+  },
+  {
+    "id": "mntk1tgrt1gmee6s167",
+    "name": "Cooper & Thief Red Wine Blend 2022",
+    "producer": "Cooper & Thief Cellarmasters",
+    "vintage": "2022",
+    "type": "red-blend",
+    "region": "California",
+    "price": "65",
+    "date": "2026-04-10",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 4,
+    "notes": "Cherry, blackberry or other berry",
+    "proNotes": "This innovative red blend is aged for 3 months in bourbon barrels, creating a unique fusion of wine and whiskey characteristics. The bourbon barrel aging imparts vanilla, caramel, and spice notes that complement the dark fruit flavors of the blend. The wine exhibits a rich, full-bodied structure with smooth tannins and a distinctive finish that bridges wine and spirits.",
+    "tags": [
+      "bourbon-barrel-aged",
+      "vanilla",
+      "caramel",
+      "dark-fruit",
+      "spice",
+      "innovative"
+    ]
   }
 ]
