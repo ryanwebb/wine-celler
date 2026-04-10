@@ -66,5 +66,27 @@
       "spicy",
       "rich"
     ]
+  },
+  {
+    "id": "mntgbhb8zgemgiuxq8",
+    "name": "Barons Creek Pinot Noir 2024",
+    "producer": "Barons Creek Winery",
+    "vintage": "2024",
+    "type": "pinot-noir",
+    "region": "",
+    "price": "47.20",
+    "date": "2026-04-09",
+    "bc": true,
+    "ryanRating": 5,
+    "pamRating": 5,
+    "notes": "",
+    "proNotes": "",
+    "tags": [
+      "cherry",
+      "earthy",
+      "medium-bodied",
+      "spice",
+      "silky"
+    ]
   }
 ]
