@@ -7,5 +7,13 @@
     "vintage": "2024",
     "qty": 1,
     "bc": true
+  },
+  {
+    "id": "mntolk87asz9sd758l7",
+    "name": "Bestial Malbec",
+    "producer": "Masl",
+    "vintage": "2023",
+    "type": "merlot",
+    "bc": false
   }
 ]
