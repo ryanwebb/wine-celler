@@ -127,5 +127,28 @@
     "notes": "",
     "proNotes": "",
     "tags": []
+  },
+  {
+    "id": "mnv31ttdjtxpl8hn8zh",
+    "name": "Josh Cellars Pinot Grigio California Vintner's Edition",
+    "producer": "Josh Cellars",
+    "vintage": "",
+    "type": "other",
+    "region": "California",
+    "price": "10",
+    "date": "2026-04-12",
+    "bc": false,
+    "ryanRating": 2,
+    "pamRating": 2,
+    "notes": "",
+    "proNotes": "A crisp and refreshing Pinot Grigio with bright acidity and clean citrus flavors. Aromas of green apple, pear, and subtle floral notes lead to a light-bodied palate with zesty lime and stone fruit characteristics. The wine finishes clean and dry, making it an excellent everyday drinking option.",
+    "tags": [
+      "crisp",
+      "citrus",
+      "light-bodied",
+      "clean",
+      "refreshing",
+      "green-apple"
+    ]
   }
 ]
