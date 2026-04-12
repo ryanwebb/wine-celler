@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v22</div>
+    <div class="header-sub">Ryan &amp; Pam · v23</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -212,6 +212,11 @@
 
   <!-- LOG -->
   <div id="tab-log" style="display:none">
+    <!-- Mode toggle -->
+    <div style="display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:8px;padding:3px;margin-bottom:20px;">
+      <button id="logModeTasted" onclick="setLogMode('tasted')" style="flex:1;padding:10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-radius:6px;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;background:var(--wine);color:var(--gold-light);">✓ Log as Tasted</button>
+      <button id="logModeWishlist" onclick="setLogMode('wishlist')" style="flex:1;padding:10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-radius:6px;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;background:transparent;color:var(--muted);">♡ Add to Wishlist</button>
+    </div>
     <div class="scan-zone">
       <div class="scan-zone-title">🔍 AI Label Scan</div>
       <div class="scan-zone-sub">Photo a label or type a wine name — Claude will search for ratings, tasting notes &amp; more to auto-fill the form below.</div>
@@ -263,7 +268,7 @@
         </div>
       </div>
 
-      <div style="margin-top:16px">
+      <div style="margin-top:16px" id="ratingsSection">
         <label style="display:block;margin-bottom:10px">Ratings</label>
         <div class="ratings-section">
           <div class="rating-block">
@@ -303,7 +308,7 @@
       </div>
       <div class="form-actions">
         <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
-        <button class="btn btn-gold" onclick="saveWine()">Save Wine</button>
+        <button class="btn btn-gold" id="saveWineBtn" onclick="saveWine()">Save Wine</button>
       </div>
     </div>
   </div>
@@ -312,6 +317,11 @@
 <!-- Detail Modal -->
 <div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeDetailModal()">
   <div class="modal"><div class="modal-handle"></div><div id="modalBody"></div></div>
+</div>
+
+<!-- Wishlist Detail Modal -->
+<div class="modal-overlay" id="wishlistDetailModal" onclick="if(event.target===this)closeWishlistModal()">
+  <div class="modal"><div class="modal-handle"></div><div id="wishlistModalBody"></div></div>
 </div>
 
 <!-- Add Cellar Modal -->
@@ -458,7 +468,26 @@ const TYPE_KEYS=Object.keys(TYPE_LABELS);
 
 let wines=JSON.parse(localStorage.getItem('webb_wines')||'[]');
 let cellar=JSON.parse(localStorage.getItem('webb_cellar')||'[]');
-let activeFilter='all', editingId=null, pendingPhotoB64=null;
+let activeFilter='all', editingId=null, pendingPhotoB64=null, logMode='tasted';
+
+function setLogMode(mode){
+  logMode=mode;
+  var tBtn=document.getElementById('logModeTasted');
+  var wBtn=document.getElementById('logModeWishlist');
+  var ratingsEl=document.getElementById('ratingsSection');
+  var saveBtn=document.getElementById('saveWineBtn');
+  if(mode==='tasted'){
+    tBtn.style.background='var(--wine)';tBtn.style.color='var(--gold-light)';
+    wBtn.style.background='transparent';wBtn.style.color='var(--muted)';
+    if(ratingsEl)ratingsEl.style.display='';
+    if(saveBtn)saveBtn.textContent='Save Wine';
+  } else {
+    wBtn.style.background='var(--wine)';wBtn.style.color='var(--gold-light)';
+    tBtn.style.background='transparent';tBtn.style.color='var(--muted)';
+    if(ratingsEl)ratingsEl.style.display='none';
+    if(saveBtn)saveBtn.textContent='Add to Wishlist';
+  }
+}
 
 function saveData(){localStorage.setItem('webb_wines',JSON.stringify(wines));localStorage.setItem('webb_cellar',JSON.stringify(cellar));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
@@ -482,7 +511,7 @@ function overall(w){
 }
 
 function renderStats(){
-  const tb=cellar.reduce((s,c)=>s+c.qty,0);
+  const tb=cellar.reduce((s,c)=>s+(c.qty||1),0);
   const rated=wines.filter(w=>overall(w)>0);
   const avg=rated.length?(rated.reduce((s,w)=>s+parseFloat(overall(w)),0)/rated.length).toFixed(1):'—';
   document.getElementById('statsBar').innerHTML=`
@@ -593,18 +622,51 @@ function renderCellar(){
   var grid=document.getElementById('cellarGrid');
   if(!cellar.length){grid.innerHTML='<div class="empty-state"><div class="icon">🍷</div><p>Your wish list is empty.<br>Add wines you want to try.</p></div>';return;}
   grid.innerHTML=cellar.map(function(item){
-    return '<div class="cellar-card">'
+    return '<div class="cellar-card" onclick="openWishlistDetail(\''+item.id+'\')" style="cursor:pointer;">'
       +'<div class="cellar-info">'
       +'<div class="cellar-name">'+item.name+'</div>'
       +'<div class="cellar-meta">'+[item.producer,TYPE_LABELS[item.type],item.vintage].filter(Boolean).join(' · ')+'</div>'
       +(item.bc?'<span class="badge badge-bc" style="margin-top:4px;display:inline-block">Baron\'s Creek</span>':'')
       +'</div>'
-      +'<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
-      +'<button onclick="moveToLog(\''+item.id+'\')" style="padding:7px 12px;border-radius:8px;border:none;background:var(--wine);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Log It</button>'
-      +'<button onclick="removeWishlist(\''+item.id+'\')" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(180,40,40,.3);background:transparent;color:#e08080;font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Remove</button>'
-      +'</div>'
+      +'<div style="color:var(--muted);font-size:18px;flex-shrink:0;padding-left:8px;">›</div>'
       +'</div>';
   }).join('');
+}
+
+function openWishlistDetail(id){
+  var item=cellar.find(function(c){return c.id===id;});
+  if(!item)return;
+  var searchTerm=(item.producer&&item.name.toLowerCase().indexOf(item.producer.toLowerCase())===-1)?item.producer+' '+item.name:item.name;
+  document.getElementById('wishlistModalBody').innerHTML=
+    '<div class="modal-title">'+item.name+'</div>'
+    +'<div class="modal-subtitle">'+[item.producer,TYPE_LABELS[item.type],item.vintage,item.region].filter(Boolean).join(' · ')+'</div>'
+    +(item.bc?'<div style="margin-bottom:16px"><span class="badge badge-bc">Baron\'s Creek</span></div>':'')
+    +'<div class="modal-section">'
+    +'<div class="modal-section-title">Details</div>'
+    +(item.type?'<div class="detail-row"><span class="detail-label">Type</span><span class="detail-val">'+TYPE_LABELS[item.type]+'</span></div>':'')
+    +(item.producer?'<div class="detail-row"><span class="detail-label">Producer</span><span class="detail-val">'+item.producer+'</span></div>':'')
+    +(item.region?'<div class="detail-row"><span class="detail-label">Region</span><span class="detail-val">'+item.region+'</span></div>':'')
+    +(item.vintage?'<div class="detail-row"><span class="detail-label">Vintage</span><span class="detail-val">'+item.vintage+'</span></div>':'')
+    +'</div>'
+    +(item.notes?'<div class="modal-section"><div class="modal-section-title">Notes</div><div class="notes-block">'+item.notes+'</div></div>':'')
+    +'<div style="display:flex;gap:8px;margin-top:8px;margin-bottom:18px;">'
+    +'<a href="https://www.wine-searcher.com/find/'+encodeURIComponent(searchTerm)+'/1/USA/TX/75407/-/-/1" target="_blank" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Wine-Searcher</a>'
+    +'</div>'
+    +'<div class="modal-actions">'
+    +'<button class="btn btn-danger" onclick="removeWishlistFromModal(\''+item.id+'\')">Remove</button>'
+    +'<button class="btn btn-secondary" onclick="closeWishlistModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="moveToLogFromModal(\''+item.id+'\')">Log It</button>'
+    +'</div>';
+  document.getElementById('wishlistDetailModal').classList.add('open');
+}
+function closeWishlistModal(){document.getElementById('wishlistDetailModal').classList.remove('open');}
+function removeWishlistFromModal(id){
+  cellar=cellar.filter(function(c){return c.id!==id;});
+  saveData(); saveToGitHub(); closeWishlistModal(); renderCellar(); renderStats();
+}
+function moveToLogFromModal(id){
+  closeWishlistModal();
+  moveToLog(id);
 }
 function removeWishlist(id){
   cellar=cellar.filter(function(c){return c.id!==id;});
@@ -646,10 +708,26 @@ function clearForm(){
   document.getElementById('photoPreview').style.display='none';
   document.getElementById('aiStatus').style.display='none';
   document.getElementById('searchInput').value='';
+  setLogMode('tasted');
 }
 function saveWine(){
   const name=document.getElementById('wName').value.trim();
   if(!name){alert('Please enter a wine name.');return;}
+  if(logMode==='wishlist'){
+    // Save to wishlist instead of tasted log
+    var typeMap={'chardonnay':'chardonnay','red-blend':'red-blend','pinot-noir':'pinot-noir','cabernet':'cabernet','merlot':'merlot','zinfandel':'zinfandel','rose':'rose','other':'other'};
+    cellar.push({
+      id:uid(),
+      name:name,
+      producer:document.getElementById('wProducer').value.trim(),
+      vintage:document.getElementById('wVintage').value.trim(),
+      type:document.getElementById('wType').value,
+      region:document.getElementById('wRegion').value.trim(),
+      bc:document.getElementById('wBC').value==='1'
+    });
+    saveData(); saveToGitHub(); clearForm(); switchTab('cellar');
+    return;
+  }
   const rR=parseInt(document.getElementById('starsRyan').dataset.rating)||0;
   const pR=parseInt(document.getElementById('starsPam').dataset.rating)||0;
   const tags=document.getElementById('wTags').value?document.getElementById('wTags').value.split(',').map(t=>t.trim()).filter(Boolean):[];
@@ -810,10 +888,8 @@ async function getRecommendation(type){
   statusEl.className='ai-status loading';
   statusEl.innerHTML='<div class="spinner"></div><span>Finding recommendations...</span>';
   resultsEl.innerHTML='';
-  // Scroll status into view so user sees it immediately
   setTimeout(function(){ statusEl.scrollIntoView({behavior:'smooth',block:'center'}); }, 50);
 
-  // Build taste profile from logged wines
   var topWines=wines.filter(function(w){return (w.ryanRating||0)>=4||(w.pamRating||0)>=4;}).map(function(w){return w.name+' ('+overall(w)+'/5)';});
   var allWines=wines.map(function(w){return w.name;});
   var wishlist=cellar.map(function(w){return w.name;});
@@ -832,24 +908,21 @@ async function getRecommendation(type){
     prompt='You are a sommelier. Recommend 3 red wine bottles for this taste profile: '+profile
       +' Stick to styles they already enjoy (red blends, Cabernet, Merlot, smooth dark-fruit reds).'
       +bottleRule
-      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
-      +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
-      +' No prose, no markdown fences, just the raw JSON array.';
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason.'
+      +' reason is 1 sentence why they will love it. No prose, no markdown fences, just the raw JSON array.';
   } else if(type==='white'){
     prompt='You are a sommelier. Recommend 3 white wine bottles for this taste profile: '+profile
       +' Stick to styles they already enjoy (oaky Chardonnay, full-bodied whites, more oak than butter).'
       +bottleRule
-      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
-      +' reason is 1 sentence why they will love it. searchUrl is a wine-searcher.com search URL.'
-      +' No prose, no markdown fences, just the raw JSON array.';
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason.'
+      +' reason is 1 sentence why they will love it. No prose, no markdown fences, just the raw JSON array.';
   } else {
     prompt='You are a sommelier. Recommend 3 ADVENTUROUS wines slightly outside this person\'s usual comfort zone, but chosen because you genuinely think they will love them based on their profile: '+profile
       +' Their usual go-tos are oaky Chardonnay and red blends. Push them somewhere interesting — think grapes or regions they likely haven\'t explored: e.g. Tempranillo, Malbec, GSM/Grenache blends, Viognier, white Burgundy/Mâcon, Albariño with body, Nero d\'Avola, Carménère, or similar.'
       +' Avoid anything sweet or thin. Each pick should be a genuine "I think you\'ll love this" stretch recommendation — different grape or region from their norm, but matching their flavor DNA (dry, some body/structure, dark or stone fruit, not flabby).'
       +bottleRule
-      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason, searchUrl.'
-      +' reason should explain both WHY it\'s a stretch AND why they\'ll love it (1-2 sentences). searchUrl is a wine-searcher.com search URL.'
-      +' No prose, no markdown fences, just the raw JSON array.';
+      +' Return ONLY a JSON array of 3 objects with keys: name, producer, region, type, typicalPrice, reason.'
+      +' reason should explain both WHY it\'s a stretch AND why they\'ll love it (1-2 sentences). No prose, no markdown fences, just the raw JSON array.';
   }
 
   try{
@@ -859,7 +932,6 @@ async function getRecommendation(type){
     try{arr=JSON.parse(cleaned);}catch(e){var m=cleaned.match(/\[[\s\S]*\]/);if(m)arr=JSON.parse(m[0]);else throw new Error('Could not parse recommendations');}
     statusEl.style.display='none';
     resultsEl.innerHTML=arr.map(function(r){
-      // Build a robust search term: prefer "name + producer" combo to avoid generic grape-only searches
       var searchTerm=(r.producer&&r.name.toLowerCase().indexOf(r.producer.toLowerCase())===-1)?r.producer+' '+r.name:r.name;
       return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:16px;">'
         +'<div style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--white);margin-bottom:3px;">'+r.name+'</div>'
@@ -867,7 +939,6 @@ async function getRecommendation(type){
         +'<div style="font-size:12px;color:var(--cream);font-style:italic;margin-bottom:12px;line-height:1.5;">'+r.reason+'</div>'
         +'<div style="display:flex;gap:8px;">'
         +'<button onclick="addToWishlist('+JSON.stringify(r).replace(/"/g,"&quot;")+')" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">+ Wishlist</button>'
-        +'<a href="https://www.vivino.com/search/wines?q='+encodeURIComponent(searchTerm)+'" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Vivino</a>'
         +'<a href="https://www.wine-searcher.com/find/'+encodeURIComponent(searchTerm)+'/1/USA/TX/75407/-/-/1" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Wine-Searcher</a>'
         +'</div>'
         +'</div>';
