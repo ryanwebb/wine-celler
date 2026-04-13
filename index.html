@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v24</div>
+    <div class="header-sub">Ryan &amp; Pam · v25</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -181,8 +181,7 @@
     <button class="tab active" onclick="switchTab('tasted')">Tasted</button>
     <button class="tab" onclick="switchTab('cellar')">Wishlist</button>
     <button class="tab" onclick="switchTab('log')">Log Wine</button>
-    <button class="tab" onclick="switchTab('recommend')">Recommend</button>
-    <button class="tab" onclick="switchTab('scout')">Scout</button>
+    <button class="tab" onclick="switchTab('recommend')">Discover</button>
   </div>
 
   <div class="stats-bar" id="statsBar"></div>
@@ -311,56 +310,6 @@
         <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
         <button class="btn btn-gold" id="saveWineBtn" onclick="saveWine()">Save Wine</button>
       </div>
-    </div>
-  </div>
-</div>
-
-  <!-- SCOUT TAB -->
-  <div id="tab-scout" style="display:none">
-    <div style="text-align:center;padding:8px 0 20px">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--muted);font-style:italic;">Point &amp; pick — scan a menu or store shelf</div>
-    </div>
-
-    <!-- Menu Scan -->
-    <div class="scan-zone" style="margin-bottom:20px">
-      <div class="scan-zone-title">📋 Menu Scan</div>
-      <div class="scan-zone-sub">Photo a restaurant wine menu — Claude will read it and suggest 2–3 wines that match your taste profile.</div>
-      <div class="scan-btns">
-        <button class="scan-btn" onclick="document.getElementById('menuCameraInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Take Photo
-        </button>
-        <button class="scan-btn" onclick="document.getElementById('menuFileInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Photo
-        </button>
-      </div>
-      <input type="file" id="menuCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'menu')">
-      <input type="file" id="menuFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'menu')">
-      <img id="menuPreview" class="preview-img" style="display:none" alt="Menu">
-      <div id="menuStatus" style="display:none"></div>
-      <div id="menuResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
-    </div>
-
-    <!-- Shelf Scan -->
-    <div class="scan-zone">
-      <div class="scan-zone-title">🛒 Shelf Scan</div>
-      <div class="scan-zone-sub">Photo a section of a wine shelf — Claude will identify bottles visible and suggest the best 2–3 picks for you.</div>
-      <div class="scan-btns">
-        <button class="scan-btn" onclick="document.getElementById('shelfCameraInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Take Photo
-        </button>
-        <button class="scan-btn" onclick="document.getElementById('shelfFileInput').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Photo
-        </button>
-      </div>
-      <input type="file" id="shelfCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
-      <input type="file" id="shelfFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
-      <img id="shelfPreview" class="preview-img" style="display:none" alt="Shelf">
-      <div id="shelfStatus" style="display:none"></div>
-      <div id="shelfResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
     </div>
   </div>
 </div>
@@ -544,7 +493,7 @@ function saveData(){localStorage.setItem('webb_wines',JSON.stringify(wines));loc
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
 function switchTab(tab){
-  ['tasted','cellar','log','recommend','scout'].forEach((t,i)=>{
+  ['tasted','cellar','log','recommend'].forEach((t,i)=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
     document.querySelectorAll('.tab')[i].classList.toggle('active',t===tab);
   });
@@ -1140,10 +1089,12 @@ if(!checkAPIKeySetup()){
 </script>
 <!-- API Key Setup Overlay -->
 
-  <!-- RECOMMEND TAB -->
+  <!-- DISCOVER TAB -->
   <div id="tab-recommend" style="display:none">
-    <div style="text-align:center;padding:8px 0 20px">
-      <div style="font-family:Cormorant Garamond,serif;font-size:14px;color:var(--muted);font-style:italic;">Based on your taste profile &amp; ratings</div>
+
+    <!-- AI Recommendations -->
+    <div style="text-align:center;padding:8px 0 16px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--muted);font-style:italic;">Based on your taste profile &amp; ratings</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
       <button onclick="getRecommendation('red')" class="rec-btn" style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:12px;border:1px solid rgba(139,38,53,.4);background:rgba(139,38,53,.12);color:var(--cream);font-family:Montserrat,sans-serif;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;width:100%;">
@@ -1157,7 +1108,49 @@ if(!checkAPIKeySetup()){
       </button>
     </div>
     <div id="recStatus" style="display:none;margin-bottom:16px"></div>
-    <div id="recResults" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div id="recResults" style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;"></div>
+
+    <!-- Menu Scan -->
+    <div class="scan-zone" style="margin-bottom:20px">
+      <div class="scan-zone-title">📋 Menu Scan</div>
+      <div class="scan-zone-sub">Photo a restaurant wine menu — Claude will read it and suggest 2–3 wines that match your taste profile.</div>
+      <div class="scan-btns">
+        <button class="scan-btn" onclick="document.getElementById('menuCameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="scan-btn" onclick="document.getElementById('menuFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <input type="file" id="menuCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'menu')">
+      <input type="file" id="menuFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'menu')">
+      <img id="menuPreview" class="preview-img" style="display:none" alt="Menu">
+      <div id="menuStatus" style="display:none"></div>
+      <div id="menuResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
+    </div>
+
+    <!-- Shelf Scan -->
+    <div class="scan-zone">
+      <div class="scan-zone-title">🛒 Shelf Scan</div>
+      <div class="scan-zone-sub">Photo a section of a wine shelf — Claude will identify bottles visible and suggest the best 2–3 picks for you.</div>
+      <div class="scan-btns">
+        <button class="scan-btn" onclick="document.getElementById('shelfCameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="scan-btn" onclick="document.getElementById('shelfFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <input type="file" id="shelfCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
+      <input type="file" id="shelfFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
+      <img id="shelfPreview" class="preview-img" style="display:none" alt="Shelf">
+      <div id="shelfStatus" style="display:none"></div>
+      <div id="shelfResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
+    </div>
   </div>
 
 <div id="apiSetup" style="display:none;position:fixed;inset:0;background:#1a0f0f;z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
