@@ -173,7 +173,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v23</div>
+    <div class="header-sub">Ryan &amp; Pam · v24</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -182,6 +182,7 @@
     <button class="tab" onclick="switchTab('cellar')">Wishlist</button>
     <button class="tab" onclick="switchTab('log')">Log Wine</button>
     <button class="tab" onclick="switchTab('recommend')">Recommend</button>
+    <button class="tab" onclick="switchTab('scout')">Scout</button>
   </div>
 
   <div class="stats-bar" id="statsBar"></div>
@@ -310,6 +311,56 @@
         <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
         <button class="btn btn-gold" id="saveWineBtn" onclick="saveWine()">Save Wine</button>
       </div>
+    </div>
+  </div>
+</div>
+
+  <!-- SCOUT TAB -->
+  <div id="tab-scout" style="display:none">
+    <div style="text-align:center;padding:8px 0 20px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--muted);font-style:italic;">Point &amp; pick — scan a menu or store shelf</div>
+    </div>
+
+    <!-- Menu Scan -->
+    <div class="scan-zone" style="margin-bottom:20px">
+      <div class="scan-zone-title">📋 Menu Scan</div>
+      <div class="scan-zone-sub">Photo a restaurant wine menu — Claude will read it and suggest 2–3 wines that match your taste profile.</div>
+      <div class="scan-btns">
+        <button class="scan-btn" onclick="document.getElementById('menuCameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="scan-btn" onclick="document.getElementById('menuFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <input type="file" id="menuCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'menu')">
+      <input type="file" id="menuFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'menu')">
+      <img id="menuPreview" class="preview-img" style="display:none" alt="Menu">
+      <div id="menuStatus" style="display:none"></div>
+      <div id="menuResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
+    </div>
+
+    <!-- Shelf Scan -->
+    <div class="scan-zone">
+      <div class="scan-zone-title">🛒 Shelf Scan</div>
+      <div class="scan-zone-sub">Photo a section of a wine shelf — Claude will identify bottles visible and suggest the best 2–3 picks for you.</div>
+      <div class="scan-btns">
+        <button class="scan-btn" onclick="document.getElementById('shelfCameraInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="scan-btn" onclick="document.getElementById('shelfFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <input type="file" id="shelfCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
+      <input type="file" id="shelfFileInput" accept="image/*" style="display:none" onchange="handleScoutPhoto(event,'shelf')">
+      <img id="shelfPreview" class="preview-img" style="display:none" alt="Shelf">
+      <div id="shelfStatus" style="display:none"></div>
+      <div id="shelfResults" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;"></div>
     </div>
   </div>
 </div>
@@ -493,7 +544,7 @@ function saveData(){localStorage.setItem('webb_wines',JSON.stringify(wines));loc
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
 function switchTab(tab){
-  ['tasted','cellar','log','recommend'].forEach((t,i)=>{
+  ['tasted','cellar','log','recommend','scout'].forEach((t,i)=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
     document.querySelectorAll('.tab')[i].classList.toggle('active',t===tab);
   });
@@ -969,6 +1020,117 @@ function populateForm(d){
   if(d.type){const t=d.type.toLowerCase().replace(/\s+/g,'-');if(TYPE_KEYS.includes(t))document.getElementById('wType').value=t;}
   if(d.producer&&d.producer.toLowerCase().includes("baron"))document.getElementById('wBC').value='1';
   if(!document.getElementById('wDate').value)document.getElementById('wDate').value=new Date().toISOString().split('T')[0];
+}
+
+// ── Scout: Menu & Shelf Scan ────────────────────────────────────────────────
+function showScoutStatus(mode, type, msg){
+  var el=document.getElementById(mode+'Status');
+  el.style.display='flex';
+  el.className='ai-status '+type;
+  el.innerHTML=type==='loading'?'<div class="spinner"></div><span>'+msg+'</span>':'<span>'+(type==='success'?'✓':'✗')+'</span><span>'+msg+'</span>';
+}
+
+function handleScoutPhoto(e, mode){
+  var file=e.target.files[0]; if(!file)return;
+  showScoutStatus(mode,'loading','Processing image…');
+  var preview=document.getElementById(mode+'Preview');
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var MAX=1600; // larger than label scan — menus/shelves need more resolution
+      var w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var compressed=canvas.toDataURL('image/jpeg',0.9);
+      preview.src=compressed;preview.style.display='block';
+      doScoutScan(compressed.split(',')[1], mode);
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+async function doScoutScan(b64, mode){
+  var statusEl=document.getElementById(mode+'Status');
+  var resultsEl=document.getElementById(mode+'Results');
+  resultsEl.innerHTML='';
+
+  var topWines=wines.filter(function(w){return (w.ryanRating||0)>=4||(w.pamRating||0)>=4;}).map(function(w){return w.name;});
+  var allWines=wines.map(function(w){return w.name;});
+  var profile='LIKES: Oaky Chardonnay (more oak than butter), red blends, smooth dark-fruit reds. DISLIKES: Sweet wines, thin/watery whites. BUDGET: ~$50 special, under $20 everyday.';
+  if(topWines.length) profile+=' TOP RATED by this person: '+topWines.join(', ')+'.';
+  profile+=' ALREADY TRIED (skip these): '+(allWines.length?allWines.join(', '):'none')+'.';
+
+  var promptText;
+  if(mode==='menu'){
+    promptText='You are a sommelier. This is a photo of a restaurant wine menu. '
+      +'Read all the wines listed and pick the best 2-3 for this taste profile: '+profile+' '
+      +'Return ONLY a JSON array of 2-3 objects. Each object must have: '
+      +'"name" (exact wine name as listed on menu), "producer" (winery), "type" (one of: chardonnay, red-blend, pinot-noir, cabernet, merlot, zinfandel, rose, other), '
+      +'"menuPrice" (price as shown on menu, e.g. "glass $14 / bottle $52"), "reason" (1 sentence why this matches their profile). '
+      +'No prose, no markdown, just the raw JSON array.';
+  } else {
+    promptText='You are a sommelier. This is a photo of a wine store shelf. '
+      +'Identify as many bottles as you can read clearly and pick the best 2-3 for this taste profile: '+profile+' '
+      +'Only recommend bottles you can actually read on the shelf — do not invent wines. '
+      +'Return ONLY a JSON array of 2-3 objects. Each object must have: '
+      +'"name" (specific bottle name including producer, e.g. "Catena Malbec"), "producer" (winery), '
+      +'"type" (one of: chardonnay, red-blend, pinot-noir, cabernet, merlot, zinfandel, rose, other), '
+      +'"typicalPrice" (if visible on shelf tag, otherwise omit), "reason" (1 sentence why this matches their profile). '
+      +'No prose, no markdown, just the raw JSON array.';
+  }
+
+  try{
+    var raw=await callClaude([{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
+      {type:'text',text:promptText}
+    ]}]);
+    var cleaned=raw.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+    var arr;
+    try{arr=JSON.parse(cleaned);}catch(e){var m=cleaned.match(/\[[\s\S]*\]/);if(m)arr=JSON.parse(m[0]);else throw new Error('Could not parse results');}
+    if(!Array.isArray(arr)||!arr.length) throw new Error('No wines identified');
+    statusEl.style.display='none';
+    resultsEl.innerHTML=arr.map(function(r){
+      var searchTerm=(r.producer&&r.name.toLowerCase().indexOf(r.producer.toLowerCase())===-1)?r.producer+' '+r.name:r.name;
+      var priceStr=mode==='menu'?(r.menuPrice||''):(r.typicalPrice||'');
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:16px;">'
+        +'<div style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--white);margin-bottom:3px;">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">'+[r.producer,r.region,priceStr].filter(Boolean).join(' · ')+'</div>'
+        +'<div style="font-size:12px;color:var(--cream);font-style:italic;margin-bottom:12px;line-height:1.5;">'+r.reason+'</div>'
+        +'<div style="display:flex;gap:8px;">'
+        +'<button onclick="scoutAddWishlist('+JSON.stringify(r).replace(/"/g,'&quot;')+')" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">+ Wishlist</button>'
+        +(mode==='menu'?'<button onclick="scoutLogWine('+JSON.stringify(r).replace(/"/g,'&quot;')+')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--wine);color:var(--gold-light);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Log It</button>':'')
+        +(mode==='shelf'?'<a href="https://www.wine-searcher.com/find/'+encodeURIComponent(searchTerm)+'/1/USA/TX/75407/-/-/1" target="_blank" style="flex:1;padding:9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;">Wine-Searcher</a>':'')
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }catch(err){
+    statusEl.className='ai-status error';
+    statusEl.innerHTML='<span>✗</span><span>'+err.message+'</span>';
+  }
+}
+
+function scoutAddWishlist(wine){
+  var typeMap={'chardonnay':'chardonnay','red blend':'red-blend','pinot noir':'pinot-noir','cabernet sauvignon':'cabernet','merlot':'merlot','zinfandel':'zinfandel','rosé':'rose','rose':'rose'};
+  var t=(wine.type||'').toLowerCase();
+  cellar.push({id:uid(),name:wine.name,producer:wine.producer||'',region:wine.region||'',type:typeMap[t]||wine.type||'other',bc:false});
+  saveData(); saveToGitHub();
+  alert(wine.name+' added to Wish List!');
+}
+
+function scoutLogWine(wine){
+  switchTab('log');
+  setTimeout(function(){
+    setLogMode('tasted');
+    document.getElementById('wName').value=wine.name||'';
+    document.getElementById('wProducer').value=wine.producer||'';
+    document.getElementById('wType').value=wine.type||'';
+    document.getElementById('wDate').value=new Date().toISOString().split('T')[0];
+  },120);
 }
 
 // Init - pre-load BC shipment
