@@ -150,5 +150,28 @@
       "refreshing",
       "green-apple"
     ]
+  },
+  {
+    "id": "mo243yti4c39ehynzmo",
+    "name": "Sonoma-Cutrer Sonoma Coast Chardonnay 2024",
+    "producer": "Sonoma-Cutrer",
+    "vintage": "2024",
+    "type": "chardonnay",
+    "region": "Sonoma Coast",
+    "price": "18",
+    "date": "2026-04-16",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 3,
+    "notes": "Drinkable, not the best Chardonnay.",
+    "proNotes": "This Sonoma Coast Chardonnay displays bright citrus and green apple flavors with subtle oak integration and refreshing acidity. The cool coastal climate imparts crisp minerality and elegant structure. Clean finish with hints of vanilla and a touch of tropical fruit.",
+    "tags": [
+      "citrus",
+      "green-apple",
+      "mineral",
+      "crisp",
+      "vanilla",
+      "tropical"
+    ]
   }
 ]
