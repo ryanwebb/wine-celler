@@ -173,5 +173,21 @@
       "vanilla",
       "tropical"
     ]
+  },
+  {
+    "id": "mo3lfrzyylklp3glg4",
+    "name": "RED BLEND, FREAKSHOW",
+    "producer": "Freakshow",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "",
+    "price": "44",
+    "date": "2026-04-18",
+    "bc": false,
+    "ryanRating": 0,
+    "pamRating": 0,
+    "notes": "Full bodied, paired with steak",
+    "proNotes": "",
+    "tags": []
   }
 ]
