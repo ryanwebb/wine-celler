@@ -212,5 +212,28 @@
       "full-bodied",
       "oak"
     ]
+  },
+  {
+    "id": "mo7t7mzgbfkm5kqwjvd",
+    "name": "Black Tie A Dry Red Wine",
+    "producer": "Girls gone Wine",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "California",
+    "price": "125",
+    "date": "2026-04-20",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 3,
+    "notes": "",
+    "proNotes": "This is a value-oriented California red blend designed for everyday drinking. It typically offers approachable flavors of dark berries, plum, and subtle spice with soft tannins and medium body. The wine is crafted for easy drinking with a smooth, fruit-forward profile.",
+    "tags": [
+      "fruity",
+      "smooth",
+      "berry",
+      "approachable",
+      "soft",
+      "easy-drinking"
+    ]
   }
 ]
