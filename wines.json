@@ -235,5 +235,28 @@
       "soft",
       "easy-drinking"
     ]
+  },
+  {
+    "id": "mof3z8in8mf1l8670v3",
+    "name": "Apothic Inferno Whiskey Barrel-Aged Red Blend",
+    "producer": "Apothic",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "California",
+    "price": "15",
+    "date": "2026-04-26",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This whiskey barrel-aged red blend offers bold flavors of dark fruit, vanilla, and spice from the barrel aging process. The wine combines rich blackberry and plum notes with smoky undertones and a hint of caramel sweetness. The whiskey barrel aging adds complexity with oak tannins and a warming finish.",
+    "tags": [
+      "bold",
+      "smoky",
+      "vanilla",
+      "dark-fruit",
+      "spicy",
+      "barrel-aged"
+    ]
   }
 ]
