@@ -258,5 +258,28 @@
       "spicy",
       "barrel-aged"
     ]
+  },
+  {
+    "id": "moko2rmmxj1o1i20uc",
+    "name": "Josh Cellars Legacy Red Blend",
+    "producer": "Josh Cellars",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "California",
+    "price": "12",
+    "date": "2026-04-29",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 3,
+    "notes": "",
+    "proNotes": "This California red blend offers approachable flavors of dark berries, plum, and subtle spice with soft tannins. The wine typically combines varietals like Cabernet Sauvignon, Merlot, and Petite Sirah to create a smooth, medium-bodied wine with notes of vanilla and chocolate from oak aging.",
+    "tags": [
+      "dark-fruit",
+      "smooth",
+      "approachable",
+      "vanilla",
+      "chocolate",
+      "spice"
+    ]
   }
 ]
