@@ -281,5 +281,28 @@
       "chocolate",
       "spice"
     ]
+  },
+  {
+    "id": "mom4pkahwuoq91jj9q",
+    "name": "La Crema Monterey Chardonnay 2023",
+    "producer": "La Crema",
+    "vintage": "2023",
+    "type": "chardonnay",
+    "region": "Monterey County, California",
+    "price": "18",
+    "date": "2026-04-30",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This Monterey Chardonnay displays bright citrus and green apple flavors with subtle tropical fruit notes and a hint of minerality from the cool coastal climate. The wine offers crisp acidity with light oak influence, creating a balanced and food-friendly style. Clean finish with notes of lemon zest and white flowers.",
+    "tags": [
+      "citrus",
+      "green-apple",
+      "crisp",
+      "mineral",
+      "coastal",
+      "fresh"
+    ]
   }
 ]
