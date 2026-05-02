@@ -304,5 +304,28 @@
       "coastal",
       "fresh"
     ]
+  },
+  {
+    "id": "moozjfdco81mpv3v53",
+    "name": "Pine Ridge Chenin Blanc + Viognier 2024",
+    "producer": "Pine Ridge Vineyards",
+    "vintage": "2024",
+    "type": "other",
+    "region": "California",
+    "price": "15",
+    "date": "2026-05-02",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This white blend combines the crisp acidity and green apple notes of Chenin Blanc with the floral aromatics and stone fruit character of Viognier. The wine offers bright citrus flavors, hints of honeysuckle, and a clean, refreshing finish with good minerality.",
+    "tags": [
+      "citrus",
+      "floral",
+      "crisp",
+      "stone-fruit",
+      "fresh",
+      "mineral"
+    ]
   }
 ]
