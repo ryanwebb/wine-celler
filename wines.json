@@ -327,5 +327,28 @@
       "fresh",
       "mineral"
     ]
+  },
+  {
+    "id": "moqggaul5jv7k91mso9",
+    "name": "Marqués de Cáceres Crianza 2018",
+    "producer": "Marqués de Cáceres",
+    "vintage": "2018",
+    "type": "red-blend",
+    "region": "Rioja",
+    "price": "12",
+    "date": "2026-05-04",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This Rioja Crianza displays classic tempranillo character with red berry fruits, vanilla, and spice from oak aging. Medium-bodied with balanced tannins and bright acidity, showing traditional Spanish winemaking with modern refinement. The wine offers excellent food pairing versatility with its elegant structure.",
+    "tags": [
+      "red berry",
+      "vanilla",
+      "spice",
+      "medium-bodied",
+      "food-friendly",
+      "traditional"
+    ]
   }
 ]
