@@ -330,8 +330,8 @@
   },
   {
     "id": "moqggaul5jv7k91mso9",
-    "name": "Marqués de Cáceres Crianza 2018",
-    "producer": "Marqués de Cáceres",
+    "name": "MarquÃ©s de CÃ¡ceres Crianza 2018",
+    "producer": "MarquÃ©s de CÃ¡ceres",
     "vintage": "2018",
     "type": "red-blend",
     "region": "Rioja",
@@ -349,6 +349,29 @@
       "medium-bodied",
       "food-friendly",
       "traditional"
+    ]
+  },
+  {
+    "id": "moxj7d0wcppz2zvlgs",
+    "name": "E. Guigal Côtes du Rhône",
+    "producer": "E. Guigal",
+    "vintage": "",
+    "type": "red-blend",
+    "region": "Côtes du Rhône",
+    "price": "12",
+    "date": "2026-05-08",
+    "bc": false,
+    "ryanRating": 2,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This classic Côtes du Rhône blend typically features Grenache, Syrah, and Mourvèdre, offering aromas of dark berries, herbs, and subtle spice. The wine displays medium body with smooth tannins and flavors of blackberry, plum, and Provençal herbs. It's approachable and food-friendly with good balance and a clean finish.",
+    "tags": [
+      "dark-fruit",
+      "herbal",
+      "medium-bodied",
+      "spicy",
+      "earthy",
+      "smooth"
     ]
   }
 ]
