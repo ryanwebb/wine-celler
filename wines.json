@@ -330,8 +330,8 @@
   },
   {
     "id": "moqggaul5jv7k91mso9",
-    "name": "MarquÃÂ©s de CÃÂ¡ceres Crianza 2018",
-    "producer": "MarquÃÂ©s de CÃÂ¡ceres",
+    "name": "MarquÃÂÃÂ©s de CÃÂÃÂ¡ceres Crianza 2018",
+    "producer": "MarquÃÂÃÂ©s de CÃÂÃÂ¡ceres",
     "vintage": "2018",
     "type": "red-blend",
     "region": "Rioja",
@@ -353,18 +353,18 @@
   },
   {
     "id": "moxj7d0wcppz2zvlgs",
-    "name": "E. Guigal CÃ´tes du RhÃ´ne",
+    "name": "E. Guigal CÃÂ´tes du RhÃÂ´ne",
     "producer": "E. Guigal",
     "vintage": "",
     "type": "red-blend",
-    "region": "CÃ´tes du RhÃ´ne",
+    "region": "CÃÂ´tes du RhÃÂ´ne",
     "price": "22",
     "date": "2026-05-08",
     "bc": false,
     "ryanRating": 2,
     "pamRating": 1,
     "notes": "",
-    "proNotes": "This classic CÃ´tes du RhÃ´ne blend typically features Grenache, Syrah, and MourvÃ¨dre, offering aromas of dark berries, herbs, and subtle spice. The wine displays medium body with smooth tannins and flavors of blackberry, plum, and ProvenÃ§al herbs. It's approachable and food-friendly with good balance and a clean finish.",
+    "proNotes": "This classic CÃÂ´tes du RhÃÂ´ne blend typically features Grenache, Syrah, and MourvÃÂ¨dre, offering aromas of dark berries, herbs, and subtle spice. The wine displays medium body with smooth tannins and flavors of blackberry, plum, and ProvenÃÂ§al herbs. It's approachable and food-friendly with good balance and a clean finish.",
     "tags": [
       "dark-fruit",
       "herbal",
@@ -372,6 +372,29 @@
       "spicy",
       "earthy",
       "smooth"
+    ]
+  },
+  {
+    "id": "mp070dnqi4mvfpfohh",
+    "name": "Rodney Strong Sonoma Coast Chardonnay 2023",
+    "producer": "Rodney Strong Vineyards",
+    "vintage": "2023",
+    "type": "chardonnay",
+    "region": "Sonoma Coast",
+    "price": "16",
+    "date": "2026-05-10",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This Sonoma Coast Chardonnay typically shows bright acidity with citrus and green apple flavors, complemented by subtle oak influence and mineral notes from the cool coastal climate. The wine displays a crisp, clean profile with hints of tropical fruit and a touch of vanilla from partial oak aging. Its coastal origin provides excellent balance between fruit richness and refreshing acidity.",
+    "tags": [
+      "crisp",
+      "citrus",
+      "green-apple",
+      "mineral",
+      "coastal",
+      "balanced"
     ]
   }
 ]
