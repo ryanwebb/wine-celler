@@ -330,8 +330,8 @@
   },
   {
     "id": "moqggaul5jv7k91mso9",
-    "name": "MarquÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©s de CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ceres Crianza 2018",
-    "producer": "MarquÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©s de CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ceres",
+    "name": "MarquÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©s de CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ceres Crianza 2018",
+    "producer": "MarquÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©s de CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ceres",
     "vintage": "2018",
     "type": "red-blend",
     "region": "Rioja",
@@ -353,18 +353,18 @@
   },
   {
     "id": "moxj7d0wcppz2zvlgs",
-    "name": "E. Guigal CÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂ´ne",
+    "name": "E. Guigal CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ne",
     "producer": "E. Guigal",
     "vintage": "",
     "type": "red-blend",
-    "region": "CÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂ´ne",
+    "region": "CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ne",
     "price": "22",
     "date": "2026-05-08",
     "bc": false,
     "ryanRating": 2,
     "pamRating": 1,
     "notes": "",
-    "proNotes": "This classic CÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂ´ne blend typically features Grenache, Syrah, and MourvÃÂÃÂÃÂÃÂ¨dre, offering aromas of dark berries, herbs, and subtle spice. The wine displays medium body with smooth tannins and flavors of blackberry, plum, and ProvenÃÂÃÂÃÂÃÂ§al herbs. It's approachable and food-friendly with good balance and a clean finish.",
+    "proNotes": "This classic CÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´tes du RhÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ne blend typically features Grenache, Syrah, and MourvÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨dre, offering aromas of dark berries, herbs, and subtle spice. The wine displays medium body with smooth tannins and flavors of blackberry, plum, and ProvenÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§al herbs. It's approachable and food-friendly with good balance and a clean finish.",
     "tags": [
       "dark-fruit",
       "herbal",
@@ -441,6 +441,29 @@
       "mineral",
       "balanced",
       "elegant"
+    ]
+  },
+  {
+    "id": "mpafq6azwc2jyu1cxjs",
+    "name": "Decoy Red Blend 2023",
+    "producer": "Decoy",
+    "vintage": "2023",
+    "type": "red-blend",
+    "region": "Alexander Valley",
+    "price": "25",
+    "date": "2026-05-17",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "This Alexander Valley red blend typically showcases dark berry fruits with hints of spice and vanilla from oak aging. The wine offers a medium to full body with smooth tannins and balanced acidity, making it approachable and food-friendly. Expect flavors of blackberry, plum, and subtle herbal notes with a lingering finish.",
+    "tags": [
+      "dark-berry",
+      "spice",
+      "vanilla",
+      "smooth-tannins",
+      "food-friendly",
+      "medium-bodied"
     ]
   }
 ]
