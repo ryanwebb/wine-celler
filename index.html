@@ -176,7 +176,7 @@
   <header>
     <div class="header-label">Personal Collection</div>
     <h1>Webb <span>Wine</span> Cellar</h1>
-    <div class="header-sub">Ryan &amp; Pam · v27</div>
+    <div class="header-sub">Ryan &amp; Pam · v28</div>
   <button onclick="localStorage.removeItem('webb_api_key');checkAPIKeySetup();" style="margin-top:8px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:4px 14px;font-family:Montserrat,sans-serif;font-size:9px;color:#7a5c50;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">⚙ Update API Key</button>
   </header>
 
@@ -485,7 +485,7 @@ function overall(w){
 }
 
 function renderStats(){
-  const tb=cellar.reduce((s,c)=>s+c.qty,0);
+  const tb=cellar.reduce((s,c)=>s+(c.qty||1),0);
   const rated=wines.filter(w=>overall(w)>0);
   const avg=rated.length?(rated.reduce((s,w)=>s+parseFloat(overall(w)),0)/rated.length).toFixed(1):'—';
   document.getElementById('statsBar').innerHTML=`
