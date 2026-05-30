@@ -488,5 +488,28 @@
       "fresh",
       "unoaked"
     ]
+  },
+  {
+    "id": "mpsw26tlswwf0xbe5jj",
+    "name": "Landon Winery Grüner Veltliner Dry 2025",
+    "producer": "Landon Winery",
+    "vintage": "2025",
+    "type": "other",
+    "region": "Texas",
+    "price": "18",
+    "date": "2026-05-30",
+    "bc": false,
+    "ryanRating": 3,
+    "pamRating": 3,
+    "notes": "",
+    "proNotes": "This Texas Grüner Veltliner displays the grape's characteristic crisp acidity and mineral backbone with citrus and green apple notes. The dry style emphasizes fresh, herbaceous qualities with subtle white pepper spice and a clean, refreshing finish typical of well-made Grüner Veltliner.",
+    "tags": [
+      "crisp",
+      "citrus",
+      "mineral",
+      "herbaceous",
+      "pepper",
+      "refreshing"
+    ]
   }
 ]
