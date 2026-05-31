@@ -511,5 +511,28 @@
       "pepper",
       "refreshing"
     ]
+  },
+  {
+    "id": "mpucn3oyiu5lnie6rwn",
+    "name": "Decoy Red Blend 2022",
+    "producer": "Decoy (Duckhorn Portfolio)",
+    "vintage": "2022",
+    "type": "red-blend",
+    "region": "Sonoma County, California",
+    "price": "18",
+    "date": "2026-05-31",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 4,
+    "notes": "",
+    "proNotes": "A well-balanced blend typically featuring Merlot, Cabernet Sauvignon, and other Bordeaux varietals. Offers approachable dark fruit flavors with notes of blackberry, plum, and subtle spice. Medium-bodied with smooth tannins and a food-friendly profile.",
+    "tags": [
+      "dark-fruit",
+      "smooth",
+      "approachable",
+      "blackberry",
+      "spice",
+      "medium-bodied"
+    ]
   }
 ]
