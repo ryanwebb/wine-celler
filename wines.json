@@ -534,5 +534,28 @@
       "spice",
       "medium-bodied"
     ]
+  },
+  {
+    "id": "mqa516jdnc1xoz9q2n",
+    "name": "Lubanzi Chenin Blanc",
+    "producer": "Lubanzi",
+    "vintage": "",
+    "type": "other",
+    "region": "South Africa",
+    "price": "12",
+    "date": "2026-06-11",
+    "bc": false,
+    "ryanRating": 4,
+    "pamRating": 3,
+    "notes": "",
+    "proNotes": "This South African Chenin Blanc displays bright citrus and green apple aromas with hints of honeysuckle and mineral notes. The palate is crisp and refreshing with good acidity, showing flavors of stone fruits and a clean, dry finish that makes it versatile for food pairing.",
+    "tags": [
+      "citrus",
+      "crisp",
+      "mineral",
+      "green-apple",
+      "dry",
+      "refreshing"
+    ]
   }
 ]
